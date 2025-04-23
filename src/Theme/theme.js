@@ -1,6 +1,6 @@
 const theme = {
     colors: {
-      primary: '#4F46E5',       // Indigo
+      primary: '#F5F5F5',       // Indigo
       secondary: '#10B981',     // Emerald
       background: '#F9FAFB',    // Light gray
       text: '#111827',          // Almost black

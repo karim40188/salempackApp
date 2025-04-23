@@ -1,18 +1,37 @@
-import React from 'react'
+import React from 'react';
 import theme from '../../Theme/theme';
+import LeftSidebar from '../../components/Home/OrderStatsSidebar/OrderStatsSidebar';
+import TopStats from '../../components/Home/TopStatsSection/TopStatsSection';
+import OrdersTable from '../../components/Home/OrdersTable/OrdersTable';
+import NextTasksPanel from '../../components/Home/NextTasks/NextTasks';
 
-const Login = () => {
+const Home = () => {
   return (
-    <div style={{
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '250px 1fr 380px',
+        gap: '20px',
         backgroundColor: theme.colors.primary,
         color: theme.colors.white,
         fontFamily: theme.fonts.main,
-        padding: '20px',
-        borderRadius: '8px'
-      }}>
-        Welcome to the Dashboard!
-      </div>
-  )
-}
+        borderRadius: '8px',
+        minHeight: '100vh',
+      }}
+    >
+      {/* 🟥 Left Sidebar */}
+      <LeftSidebar />
 
-export default Login
+      {/* 🟧 Center Content (Top Stats + Orders Table) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <TopStats />
+        <OrdersTable />
+      </div>
+
+      {/* 🟩 Right Panel */}
+      <NextTasksPanel />
+    </div>
+  );
+};
+
+export default Home;
