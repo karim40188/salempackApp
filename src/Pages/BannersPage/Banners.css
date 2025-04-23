@@ -1,0 +1,52 @@
+/* src/pages/BannerImages.css */
+.banner-container {
+    background-color: #f2f2f2;
+    padding: 40px;
+    min-height: 100vh;
+  }
+  
+  .new-banner-btn {
+    background-color: green !important;
+    color: white !important;
+    text-transform: none;
+    margin-bottom: 30px;
+    border-radius: 10px;
+  }
+  
+  .banner-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 40px;
+  }
+  
+  .banner-grid {
+    justify-content: center;
+  }
+  
+  .banner-box {
+    height: 120px;
+    background-color: #d9d9d9;
+    margin-bottom: 15px;
+    border-radius: 4px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .change-btn {
+    background-color: #74c7e3 !important;
+    color: white !important;
+    text-transform: none;
+    border-radius: 10px;
+  }
+  
+  .remove-btn {
+    background-color: red !important;
+    color: white !important;
+    text-transform: none;
+    border-radius: 10px;
+  }
+  

@@ -1,0 +1,42 @@
+.header-appbar {
+    background: linear-gradient(to right, #2391c6, #67c1ea); /* match your screenshot */
+    box-shadow: none;
+  }
+  
+  .header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+  
+  .logo-box {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-img {
+    height: 40px;
+  }
+  
+  .logo-title {
+    color: white;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+  
+  .slogan {
+    color: white;
+    font-size: 10px;
+    opacity: 0.8;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .icon-btn {
+    padding: 6px;
+  }
+  

@@ -1,0 +1,57 @@
+.orders-container {
+  padding: 40px;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.new-order-btn {
+  background-color: green !important;
+  color: white;
+  font-weight: bold;
+  padding: 6px 20px;
+  border-radius: 10px;
+}
+
+.orders-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filter-label {
+  font-weight: bold;
+}
+
+.search-input {
+  width: 300px;
+  background-color: white;
+  border-radius: 6px;
+}
+
+.actions-box {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background-color: #67c9e4 !important;
+  color: white;
+}
+
+.reorder-btn {
+  background-color: #ffa726 !important;
+  color: white;
+}
+
+.invoice-btn {
+  background-color: red !important;
+  color: white;
+}

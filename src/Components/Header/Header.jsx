@@ -1,15 +1,40 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import SlideMenu from '../SlideMenu/SlideMenu';
+import MenuIcon from '@mui/icons-material/Menu';
+import LanguageIcon from '@mui/icons-material/Language';
+import { AppBar, Toolbar, IconButton, Box, Typography } from '@mui/material';
+import './Header.css';
+import WhiteLogo from '../../assets/Header/WhiteLogoSalemPack.png';
 
-const Header = () => (
-  <header style={{ padding: '10px', background: '#333', color: '#fff' }}>
-    <nav>
-      <Link to="/home" style={{ marginRight: 10 }}>Home</Link>
-      <Link to="/banners" style={{ marginRight: 10 }}>Banners</Link>
-      <Link to="/orders" style={{ marginRight: 10 }}>Orders</Link>
-      <Link to="/clients" style={{ marginRight: 10 }}>Clients</Link>
-    </nav>
-  </header>
-);
+const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <>
+      <AppBar position="static" className="header-appbar">
+        <Toolbar className="header-toolbar">
+          <Box display="flex" alignItems="center" className="logo-box">
+            <img src={WhiteLogo} alt="Logo" className="logo-img" />
+          </Box>
+
+          <Box className="header-right">
+            <IconButton className="icon-btn" aria-label="translate">
+              <LanguageIcon sx={{ color: '#fff' }} />
+            </IconButton>
+            <IconButton
+              className="icon-btn"
+              aria-label="menu"
+              onClick={() => setMenuOpen(true)}
+            >
+              <MenuIcon sx={{ color: '#fff' }} />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <SlideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+    </>
+  );
+};
 
 export default Header;

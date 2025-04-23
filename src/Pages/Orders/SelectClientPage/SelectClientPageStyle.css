@@ -1,0 +1,56 @@
+.select-client-container {
+    padding: 20px;
+    background-color: #f2f2f2;
+    min-height: 100vh;
+  }
+  
+  .select-title {
+    font-weight: bold;
+  }
+  
+  .client-card {
+    cursor: pointer;
+    text-align: center;
+    padding: 10px;
+    border-radius: 12px;
+    position: relative;
+    background-color: white;
+    transition: 0.3s;
+  }
+  
+  .client-card:hover {
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  
+  .client-logo {
+    width: 100%;
+    max-width: 100px;
+    margin: auto;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .selected {
+    background-color: #228B22 !important;
+    color: white;
+  }
+  
+  .check-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: white;
+  }
+  
+  .search-input {
+    background-color: #87ceeb;
+    border-radius: 4px;
+    color: white;
+  }
+  
+  .select-product-btn {
+    background-color: green !important;
+    color: white;
+    font-weight: bold;
+  }
+  
