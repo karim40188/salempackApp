@@ -5,15 +5,16 @@ import LanguageIcon from '@mui/icons-material/Language';
 import { AppBar, Toolbar, IconButton, Box, Typography } from '@mui/material';
 import './Header.css';
 import WhiteLogo from '../../assets/Header/WhiteLogoSalemPack.png';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-
+const navigate = useNavigate()
   return (
     <>
       <AppBar position="static" className="header-appbar">
         <Toolbar className="header-toolbar">
-          <Box display="flex" alignItems="center" className="logo-box">
+          <Box onClick={()=>navigate("/")} display="flex" alignItems="center" className="logo-box">
             <img src={WhiteLogo} alt="Logo" className="logo-img" />
           </Box>
 

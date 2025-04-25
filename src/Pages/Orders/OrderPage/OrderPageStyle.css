@@ -11,12 +11,22 @@
   margin-bottom: 30px;
 }
 
+.orders-header h5 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
 .new-order-btn {
   background-color: green !important;
-  color: white;
+  color: white !important;
   font-weight: bold;
   padding: 6px 20px;
   border-radius: 10px;
+}
+
+.new-order-btn:hover {
+  background-color: #388e3c !important;
 }
 
 .orders-toolbar {
@@ -36,9 +46,16 @@
   border-radius: 6px;
 }
 
+.MuiTableContainer-root {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
 .actions-box {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .edit-btn {
@@ -46,12 +63,24 @@
   color: white;
 }
 
+.edit-btn:hover {
+  background-color: #57bcd9 !important;
+}
+
 .reorder-btn {
   background-color: #ffa726 !important;
   color: white;
 }
 
+.reorder-btn:hover {
+  background-color: #fb8c00 !important;
+}
+
 .invoice-btn {
   background-color: red !important;
   color: white;
+}
+
+.invoice-btn:hover {
+  background-color: #d32f2f !important;
 }

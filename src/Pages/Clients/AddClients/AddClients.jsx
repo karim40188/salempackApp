@@ -1,36 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import './AddClientsStyle.css';
+import { Context } from '../../../context/AuthContext';
+import useImageUploader from '../../../hooks/useImageUploader'; // assuming this is your custom hook
+import { useNavigate } from 'react-router-dom';
 
 const AddClientPage = () => {
-  const products = [
-    {
-      id: 1,
-      name: '10oz Paper Cup (Single Wall)',
-      size: 'Ø 90 mm, White',
-      image: 'https://i.imgur.com/mugFIvQ.png',
-    },
-    {
-      id: 2,
-      name: '12oz Paper Cup (Single Wall)',
-      size: 'Ø 90 mm, White',
-      image: 'https://i.imgur.com/mugFIvQ.png',
-    },
-    {
-      id: 3,
-      name: '16oz Paper Cup (Single Wall)',
-      size: 'Ø 90 mm, White',
-      image: 'https://i.imgur.com/mugFIvQ.png',
-    },
-  ];
-
+  const { baseUrl, token } = useContext(Context);
+  const uploadImage = useImageUploader(baseUrl, token);
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     companyName: '',
     employeeName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    logo: '',
+    logo: null,
     selectedProducts: [],
   });
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${baseUrl}/dashboard/products`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProducts(res.data);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleLogoChange = (e) => {
+    setFormData((prev) => ({ ...prev, logo: e.target.files[0] }));
+  };
 
   const handleProductSelect = (e) => {
     const selectedId = parseInt(e.target.value);
@@ -46,86 +57,142 @@ const AddClientPage = () => {
     }
   };
 
-  return (
-    <div style={{ padding: '40px', background: '#f8f8f8', minHeight: '100vh' }}>
-      <h2 style={{ textAlign: 'center', fontWeight: 'bold' }}>Add Client</h2>
+  const handleRemoveProduct = (id) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedProducts: prev.selectedProducts.filter((p) => p.id !== id),
+    }));
+  };
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', gap: '30px', flexWrap: 'wrap' }}>
-        {/* Company Data */}
+  const handleSave = async () => {
+    const {
+      companyName,
+      employeeName,
+      email,
+      password,
+      confirmPassword,
+      logo,
+      selectedProducts,
+    } = formData;
+
+    if (!companyName || !employeeName || !email || !password || password !== confirmPassword || !logo || selectedProducts.length === 0) {
+      alert('Please fill all fields and select at least one product.');
+      return;
+    }
+
+    try {
+      const uploadedLogo = await uploadImage(logo); // returns filename
+      const payload = {
+        username: employeeName,
+        CompanyName: companyName,
+        MobileNumber: '00000000000', // optional/fixed or add field for it
+        Logo: uploadedLogo,
+        Email: email,
+        Password: password,
+        products: selectedProducts.map((product) => ({
+          product: product.productName,
+          Price: product.productPrice,
+          MinimumQuantity: 1, // default if required by backend
+        })),
+      };
+
+      const res = await axios.post(`${baseUrl}/dashboard/clients`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      alert('Client created successfully!');
+      navigate("/clients")
+      console.log(res.data);
+    } catch (err) {
+      console.error('Failed to create client:', err);
+      alert('Error creating client.');
+    }
+  };
+
+  return (
+    <div className="add-client-container">
+      <h2 className="add-client-title">Add Client</h2>
+
+      <div className="form-sections">
         <div style={{ flex: '1' }}>
-          <input type="text" placeholder="Company Name" style={inputStyle} />
-          <input type="text" placeholder="Employee Name" style={inputStyle} />
-          <div style={{ ...inputStyle, textAlign: 'center', lineHeight: '40px', cursor: 'pointer' }}>
-            Company Logo
-          </div>
+          <input
+            name="companyName"
+            type="text"
+            placeholder="Company Name"
+            className="input-style"
+            value={formData.companyName}
+            onChange={handleInputChange}
+          />
+          <input
+            name="employeeName"
+            type="text"
+            placeholder="Employee Name"
+            className="input-style"
+            value={formData.employeeName}
+            onChange={handleInputChange}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleLogoChange}
+            className="input-style"
+          />
         </div>
 
-        {/* Product Dropdown */}
-        <div style={{ flex: '1' }}>
-          <select onChange={handleProductSelect} style={{ ...inputStyle, fontWeight: 'bold' }}>
+        <div style={{ flex: '1', marginLeft: '10px' }}>
+          <select onChange={handleProductSelect} className="input-style" style={{ fontWeight: 'bold' }}>
             <option value="">Select Products</option>
             {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
+              <option key={p.id} value={p.id}>{p.productName}</option>
             ))}
           </select>
         </div>
 
-        {/* Credentials */}
         <div style={{ flex: '1' }}>
-          <input type="email" placeholder="Email" style={inputStyle} />
-          <input type="password" placeholder="Password" style={inputStyle} />
-          <input type="password" placeholder="Confirm Password" style={inputStyle} />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className="input-style"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="input-style"
+            value={formData.password}
+            onChange={handleInputChange}
+          />
+          <input
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+            className="input-style"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+          />
         </div>
       </div>
 
-      {/* Product Cart Section */}
-      <div style={{ display: 'flex', gap: '20px', marginTop: '40px', flexWrap: 'wrap' }}>
+      <div className="selected-products">
         {formData.selectedProducts.map((product) => (
-          <div key={product.id} style={productCardStyle}>
-            <img src={product.image} alt={product.name} style={{ height: '80px', objectFit: 'contain' }} />
-            <div style={{ fontSize: '12px', marginTop: '5px', textAlign: 'center' }}>
-              {product.name}<br />{product.size}
+          <div key={product.id} className="product-card">
+            <img src={`${baseUrl}/public/uploads/${product.productPhoto}`} alt={product.productName} style={{ height: '80px', objectFit: 'contain' }} />
+            <div style={{ fontSize: '12px', marginTop: '5px' }}>
+              {product.productName}<br />Price: ${product.productPrice}
             </div>
+            <button onClick={() => handleRemoveProduct(product.id)} className="remove-btn">
+              Remove
+            </button>
           </div>
         ))}
       </div>
 
-      {/* Save Button */}
-      <div style={{ textAlign: 'right', marginTop: '30px' }}>
-        <button style={saveButtonStyle}>Save</button>
-      </div>
+      <button onClick={handleSave} className="save-button">Save</button>
     </div>
   );
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '12px 15px',
-  marginBottom: '15px',
-  borderRadius: '10px',
-  border: '1px solid #ccc',
-  fontSize: '14px',
-};
-
-const productCardStyle = {
-  border: '1px solid #ccc',
-  borderRadius: '10px',
-  padding: '10px',
-  width: '120px',
-  textAlign: 'center',
-  backgroundColor: '#fff',
-};
-
-const saveButtonStyle = {
-  backgroundColor: '#2a9700',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '10px',
-  padding: '10px 30px',
-  fontWeight: 'bold',
-  cursor: 'pointer',
 };
 
 export default AddClientPage;

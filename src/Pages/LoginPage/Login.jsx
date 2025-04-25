@@ -1,5 +1,5 @@
-// src/Pages/LoginPage/Login.jsx
-import React, { useState } from 'react';
+// ✅ src/Pages/LoginPage/Login.jsx
+import React, { useContext, useState } from 'react';
 import {
   TextField, Button, InputAdornment, IconButton,
   CircularProgress, Paper, Box, Typography
@@ -7,24 +7,44 @@ import {
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import './LoginStyle.css';
 import AuthLayout from '../../Layout/Authlayout';
+import axios from "axios";
+import loginImage from '../../assets/Login/loginImg.png';
+import Logo from '../../assets/Login/SalemPackMainLogo.png';
+import { useNavigate } from 'react-router-dom';
+import { Context } from '../../context/AuthContext';
 
-// import images
-
-import loginImage from '../../assets/Login/loginImg.png'; // update this path based on your structure
-import Logo from '../../assets/Login/SalemPackMainLogo.png'; // update this path based on your structure
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { baseUrl, setToken } = useContext(Context);
 
   const handleTogglePassword = () => setShowPassword(!showPassword);
-  const handleLogin = () => {
+
+  const handleLogin = async () => {
     setLoading(true);
-    setTimeout(() => {
+    setError('');
+    try {
+      const response = await axios.post(`${baseUrl}/dashboard/auth/login`, {
+        email,
+        password
+      });
+
+      const userToken = response.data.access_token;
+      console.log(userToken)
+      localStorage.setItem("token", userToken);
+      setToken(userToken);
+      navigate("/");
+
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError("Invalid email or password");
+    } finally {
       setLoading(false);
-      alert('Logged in!');
-    }, 2000);
+    }
   };
 
   return (
@@ -61,6 +81,8 @@ const Login = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={!!error}
+            helperText={error}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -82,7 +104,7 @@ const Login = () => {
               Reset Password
             </Typography>
           </Box>
-          
+
           <Button
             variant="contained"
             className="login-button"

@@ -1,11 +1,22 @@
 // src/components/SlideMenu/SlideMenu.jsx
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box } from '@mui/material';
 import { slide as Menu } from 'react-burger-menu';
 import './SlideMenu.css';
 import WhiteLogo from '../../assets/Header/WhiteLogoSalemPack.png';
+import { Context } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const SlideMenu = ({ isOpen, onClose }) => {
+  const { setToken } = useContext(Context);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    navigate("/");
+  };
+
   return (
     <>
       <div className={`menu-overlay ${isOpen ? 'show' : ''}`} onClick={onClose}></div>
@@ -22,13 +33,16 @@ const SlideMenu = ({ isOpen, onClose }) => {
           <img src={WhiteLogo} alt="Logo" className="logo-img" />
         </Box>
 
-        <a className="menu-item" href="#home">Home</a>
-        <a className="menu-item" href="#transformations">Transformations</a>
-        <a className="menu-item" href="#feedbacks">Feedbacks</a>
-        <a className="menu-item" href="#pricing">Plans & Pricing</a>
-        <a className="menu-item" href="#app">Informa App</a>
-        <a className="menu-item" href="#about">About Us</a>
-        <a className="menu-item" href="#contact">Contact Us</a>
+        <a className="menu-item" href="/home">Home</a>
+        <a className="menu-item" href="/banners">Banners</a>
+        <a className="menu-item" href="/orders">Orders</a>
+ 
+        <a className="menu-item" href="/select-clients">Products</a>
+        <a className="menu-item" href="/categories">Categories</a>
+
+        <a className="menu-item" onClick={handleLogout} style={{ cursor: 'pointer', color: '#f44336' }}>
+          Logout
+        </a>
       </Menu>
     </>
   );
