@@ -21,6 +21,7 @@ import CategoriesPage from '../Pages/CategoriesPage/CategoriesPage.jsx';
 import EditCategoryPage from '../Pages/EditCategoryPage/EditCategoryPage.jsx';
 import EditOrderPage from '../Pages/EditOrderPage/EditOrderPage.jsx';
 import EditBanner from '../Pages/EditBanner/EditBanner.jsx';
+import EditClient from '../Pages/EditClient/EditClient.jsx';
 
 const AppRoutes = () => (
   <Routes>
@@ -90,6 +91,14 @@ const AppRoutes = () => (
       element={
         <PrivateRoute>
           <DashboardLayout><AddClients /></DashboardLayout>
+        </PrivateRoute>
+      }
+    />
+    <Route
+     path="/edit-client/:id"
+      element={
+        <PrivateRoute>
+          <DashboardLayout><EditClient /></DashboardLayout>
         </PrivateRoute>
       }
     />

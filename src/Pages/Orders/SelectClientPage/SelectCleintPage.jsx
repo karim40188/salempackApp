@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Box, Button, Grid, TextField, Typography, Paper
+  Box, Button, Grid, TextField, Typography, Paper, IconButton
 } from '@mui/material';
-import { CheckCircle, Search } from '@mui/icons-material';
+import { CheckCircle, Search, Edit, Delete } from '@mui/icons-material';
 import './SelectClientPageStyle.css';
 import axios from 'axios';
 import { Context } from '../../../context/AuthContext';
@@ -24,8 +24,6 @@ const SelectClient = () => {
           }
         });
         setClients(res.data || []);
-        console.log(res.data)
-        
       } catch (err) {
         console.error("Error fetching clients", err);
       }
@@ -34,12 +32,29 @@ const SelectClient = () => {
     fetchClients();
   }, [baseUrl, token]);
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
+      try {
+        await axios.delete(`${baseUrl}/dashboard/clients?id=${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // امسح العميل من الليسته بعد الحذف
+        setClients(prev => prev.filter(client => client.id !== id));
+      } catch (err) {
+        console.error("Error deleting client", err);
+      }
+    }
+  };
+
   const filteredClients = clients.filter(client =>
     client.CompanyName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <Box className="select-client-container">
+      <Button onClick={() => navigate("/add-clients")} className='add-client-btn' sx={{ color: "white", mb: '20px' }}>
+        Add Client
+      </Button>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5" className="select-title">Select Client</Typography>
         <TextField
@@ -62,6 +77,7 @@ const SelectClient = () => {
               elevation={selectedClient === client.id ? 8 : 1}
               className={`client-card ${selectedClient === client.id ? 'selected' : ''}`}
               onClick={() => setSelectedClient(client.id)}
+              sx={{ position: 'relative' }}
             >
               <img
                 src={`${baseUrl}/public/uploads/${client.Logo}`}
@@ -72,6 +88,31 @@ const SelectClient = () => {
               {selectedClient === client.id && (
                 <CheckCircle className="check-icon" />
               )}
+
+              {/* زرار Edit */}
+              <IconButton
+                size="small"
+                sx={{ position: 'absolute', top: 5, right: 30 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/edit-client/${client.id}`);
+                }}
+              >
+                <Edit fontSize="small" />
+              </IconButton>
+
+              {/* زرار Delete */}
+              <IconButton
+                size="small"
+                sx={{ position: 'absolute', top: 5, right: 5 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(client.id);
+                }}
+              >
+                <Delete fontSize="small" />
+              </IconButton>
+
             </Paper>
           </Grid>
         ))}
@@ -80,7 +121,7 @@ const SelectClient = () => {
       <Box textAlign="right" mt={4}>
         <Button
           onClick={() => {
-            localStorage.setItem("selectedClientId", selectedClient); // احفظ ID
+            localStorage.setItem("selectedClientId", selectedClient);
             navigate("/select-product");
           }}
           variant="contained"
@@ -89,7 +130,6 @@ const SelectClient = () => {
         >
           Select Product
         </Button>
-
       </Box>
     </Box>
   );

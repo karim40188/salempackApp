@@ -20,9 +20,9 @@ const EditCategoryPage = () => {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const res = await axios.get(`${baseUrl}/dashboard/categories`, {
+                const res = await axios.get(`${baseUrl}/dashboard/categories/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
-                    params: { id },
+              
                 });
 
                 const category = res.data;
@@ -102,11 +102,14 @@ const EditCategoryPage = () => {
             {existingPhoto && (
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="body2" gutterBottom>Current Photo:</Typography>
+                    <Box sx={{width:'300px'}}>
                     <img
-                        src={`${baseUrl}/images/${existingPhoto}`}
+                        src={`${baseUrl}/public/uploads/${existingPhoto}`}
                         alt="Current"
-                        style={{ width: "100%", borderRadius: "8px" }}
+                        style={{ width: "100%",objectFit:"contain", borderRadius: "8px" }}
                     />
+                    </Box>
+                    
                 </Box>
             )}
 

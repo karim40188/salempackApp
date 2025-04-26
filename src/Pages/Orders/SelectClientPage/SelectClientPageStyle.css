@@ -48,7 +48,7 @@
     color: white;
   }
   
-  .select-product-btn {
+  .select-product-btn,.add-client-btn {
     background-color: green !important;
     color: white;
     font-weight: bold;

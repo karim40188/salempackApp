@@ -33,7 +33,7 @@ const SlideMenu = ({ isOpen, onClose }) => {
           <img src={WhiteLogo} alt="Logo" className="logo-img" />
         </Box>
 
-        <a className="menu-item" href="/home">Home</a>
+        <a className="menu-item" href="/">Home</a>
         <a className="menu-item" href="/banners">Banners</a>
         <a className="menu-item" href="/orders">Orders</a>
  
