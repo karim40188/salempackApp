@@ -12,7 +12,7 @@ const SlideMenu = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("salemPack_token");
     setToken(null);
     navigate("/");
   };

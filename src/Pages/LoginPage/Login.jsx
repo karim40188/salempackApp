@@ -35,7 +35,7 @@ const Login = () => {
 
       const userToken = response.data.access_token;
       console.log(userToken)
-      localStorage.setItem("token", userToken);
+      localStorage.setItem("salemPack_token", userToken);
       setToken(userToken);
       navigate("/");
 

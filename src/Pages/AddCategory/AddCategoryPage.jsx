@@ -12,7 +12,7 @@ const AddCategory = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate()
-  const uploadImage = useImageUploader(import.meta.env.VITE_BASE_URL, localStorage.getItem('token'));
+  const uploadImage = useImageUploader(import.meta.env.VITE_BASE_URL, localStorage.getItem('salemPack_token'));
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -43,7 +43,7 @@ const AddCategory = () => {
 
       await axios.post(`${import.meta.env.VITE_BASE_URL}/dashboard/categories`, categoryData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('salemPack_token')}`,
         },
       });
 
