@@ -13,7 +13,22 @@ import {
   Paper,
   InputLabel,
   FormControl,
+  Select,
+  MenuItem,
+  Card,
+  CardMedia,
+  Grid,
+  Divider,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CategoryIcon from '@mui/icons-material/Category';
+import SaveIcon from '@mui/icons-material/Save';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LabelIcon from '@mui/icons-material/Label';
 
 const EditProductPage = () => {
   const { id } = useParams();
@@ -29,31 +44,42 @@ const EditProductPage = () => {
     category: '',
     photo: '',
   });
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProductAndCategories = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${baseUrl}/dashboard/products/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const [productRes, categoriesRes] = await Promise.all([
+          axios.get(`${baseUrl}/dashboard/products/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${baseUrl}/dashboard/categories`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
         setProduct({
-          name: res.data.productName,
-          description: res.data.productDescription,
-          price: res.data.productPrice,
-          category: res.data.productCategory,
-          photo: res.data.productPhoto,
+          name: productRes.data.productName,
+          description: productRes.data.productDescription,
+          price: productRes.data.productPrice,
+          category: productRes.data.productCategory, // هنربطه بعدين بالـ select
+          photo: productRes.data.productPhoto,
         });
-        setImagePreview(`${baseUrl}/public/uploads/${res.data.productPhoto}`);
+
+        setCategories(categoriesRes.data);
+
+        setImagePreview(`${baseUrl}/public/uploads/${productRes.data.productPhoto}`);
       } catch (err) {
-        alert('Failed to load product data');
+        alert('Failed to load product or categories');
       } finally {
         setLoading(false);
       }
     };
-    fetchProduct();
+    fetchProductAndCategories();
   }, [id, baseUrl, token]);
 
   const handleInputChange = (e) => {
@@ -71,14 +97,18 @@ const EditProductPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+
     let uploadedPhoto = product.photo;
     if (product.photo instanceof File) {
       uploadedPhoto = await uploadImage(product.photo);
       if (!uploadedPhoto) {
         alert('Image upload failed');
+        setSubmitting(false);
         return;
       }
     }
+
     const updatedProduct = {
       productName: product.name,
       productDescription: product.description,
@@ -86,6 +116,7 @@ const EditProductPage = () => {
       productCategory: product.category,
       productPhoto: uploadedPhoto,
     };
+
     try {
       await axios.patch(`${baseUrl}/dashboard/products/${id}`, updatedProduct, {
         headers: {
@@ -94,104 +125,240 @@ const EditProductPage = () => {
         },
       });
       alert('Product updated successfully!');
-      navigate('/select-product');
+      navigate('/products');
     } catch (error) {
       console.error('Error updating product:', error);
       alert('Failed to update product.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  return (
-    <Box sx={{ p: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-      <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
-        Edit Product
-      </Typography>
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={60} thickness={4} sx={{ mb: 3 }} />
+          <Typography variant="h6" color="text.secondary">
+            Loading product data...
+          </Typography>
         </Box>
-      ) : (
-        <Paper elevation={3} sx={{ maxWidth: 600, mx: 'auto', p: 4 }}>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Name"
-              name="name"
-              value={product.name}
-              onChange={handleInputChange}
-              required
-              margin="normal"
-            />
+      </Box>
+    );
+  }
 
-            <TextField
-              fullWidth
-              label="Description"
-              name="description"
-              value={product.description}
-              onChange={handleInputChange}
-              required
-              margin="normal"
-              multiline
-              rows={4}
-            />
+  return (
+    <Box sx={{ p: { xs: 2, md: 4 }, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          maxWidth: 900, 
+          mx: 'auto', 
+          p: { xs: 3, md: 4 }, 
+          borderRadius: 2,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <IconButton 
+            onClick={() => navigate('/products')} 
+            sx={{ mr: 2, bgcolor: 'rgba(0,0,0,0.04)' }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h4" fontWeight="bold">
+            Edit Product
+          </Typography>
+        </Box>
 
-            <TextField
-              fullWidth
-              label="Price"
-              type="number"
-              name="price"
-              value={product.price}
-              onChange={handleInputChange}
-              required
-              margin="normal"
-            />
+        <Divider sx={{ mb: 4 }} />
 
-            <TextField
-              fullWidth
-              label="Category"
-              type="number"
-              name="category"
-              value={product.category}
-              onChange={handleInputChange}
-              required
-              margin="normal"
-            />
-
-            <FormControl fullWidth sx={{ mt: 2 }}>
-              <InputLabel shrink htmlFor="photo-upload">
-                Product Image
-              </InputLabel>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                id="photo-upload"
-                style={{ marginTop: '8px' }}
-              />
-              {imagePreview && (
-                <Box mt={2}>
-                  <img
-                    src={imagePreview}
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={4}>
+            {/* Left Column - Image */}
+            <Grid item xs={12} md={4}>
+              <Card 
+                elevation={2} 
+                sx={{ 
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                  } 
+                }}
+              >
+                <Box sx={{ position: 'relative', paddingTop: '100%' }}>
+                  <CardMedia
+                    component="img"
+                    image={imagePreview || 'https://via.placeholder.com/300?text=No+Image'}
                     alt="Product Preview"
-                    style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '5px' }}
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
                   />
                 </Box>
-              )}
-            </FormControl>
+                <Box sx={{ p: 2 }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    id="photo-upload"
+                    style={{ display: 'none' }}
+                  />
+                  <label htmlFor="photo-upload">
+                    <Button 
+                      variant="contained" 
+                      component="span"
+                      startIcon={<CloudUploadIcon />}
+                      fullWidth
+                      sx={{ 
+                        py: 1.2,
+                        bgcolor: '#6366F1',
+                        '&:hover': {
+                          bgcolor: '#4F46E5'
+                        }
+                      }}
+                    >
+                      Upload New Image
+                    </Button>
+                  </label>
+                </Box>
+              </Card>
+            </Grid>
 
-            <Button
-              type="submit"
-              variant="contained"
-              color="success"
-              fullWidth
-              sx={{ mt: 4, py: 1.5, fontWeight: 'bold', borderRadius: 5 }}
-            >
-              Save Changes
-            </Button>
-          </form>
-        </Paper>
-      )}
+            {/* Right Column - Form Fields */}
+            <Grid item xs={12} md={8}>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    name="name"
+                    value={product.name}
+                    onChange={handleInputChange}
+                    required
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LabelIcon color="primary" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Price"
+                    type="number"
+                    name="price"
+                    value={product.price}
+                    onChange={handleInputChange}
+                    required
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AttachMoneyIcon color="primary" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth variant="outlined" required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
+                    <InputLabel>Category</InputLabel>
+                    <Select
+                      name="category"
+                      value={product.category}
+                      onChange={handleInputChange}
+                      label="Category"
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <CategoryIcon color="primary" />
+                        </InputAdornment>
+                      }
+                    >
+                      {categories.map((cat) => (
+                        <MenuItem key={cat.id} value={cat.id}>
+                          {cat.categoriesName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Description"
+                    name="description"
+                    value={product.description}
+                    onChange={handleInputChange}
+                    required
+                    variant="outlined"
+                    multiline
+                    rows={5}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5, mr: 1 }}>
+                          <DescriptionIcon color="primary" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                  />
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/products')}
+                  sx={{ 
+                    mr: 2, 
+                    px: 3,
+                    borderRadius: 2,
+                    borderWidth: 2,
+                    '&:hover': {
+                      borderWidth: 2
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  disabled={submitting}
+                  startIcon={<SaveIcon />}
+                  sx={{ 
+                    px: 4, 
+                    py: 1.2, 
+                    fontWeight: 'bold', 
+                    borderRadius: 2,
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  {submitting ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
     </Box>
   );
 };

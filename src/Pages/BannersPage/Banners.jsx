@@ -75,7 +75,7 @@ const BannerImages = () => {
         New Banner
       </Button>
 
-      <Typography variant="h5" className="banner-title">
+      <Typography variant="h5" className="banner-title" sx={{fontWeight:"900"}}>
         Banner Images
       </Typography>
 

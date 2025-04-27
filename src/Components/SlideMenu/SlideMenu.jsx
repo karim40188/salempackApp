@@ -29,15 +29,15 @@ const SlideMenu = ({ isOpen, onClose }) => {
         width={280}
         className="menu-container"
       >
-        <Box className="logo-wrapper">
+        <Box onClick={()=>navigate("/")} className="logo-wrapper">
           <img src={WhiteLogo} alt="Logo" className="logo-img" />
         </Box>
 
         <a className="menu-item" href="/">Home</a>
         <a className="menu-item" href="/banners">Banners</a>
         <a className="menu-item" href="/orders">Orders</a>
- 
-        <a className="menu-item" href="/select-clients">Products</a>
+        <a className="menu-item" href="/products">Products</a>
+        <a className="menu-item" href="/clients">Clients</a>
         <a className="menu-item" href="/categories">Categories</a>
 
         <a className="menu-item" onClick={handleLogout} style={{ cursor: 'pointer', color: '#f44336' }}>

@@ -22,6 +22,7 @@ import EditCategoryPage from '../Pages/EditCategoryPage/EditCategoryPage.jsx';
 import EditOrderPage from '../Pages/EditOrderPage/EditOrderPage.jsx';
 import EditBanner from '../Pages/EditBanner/EditBanner.jsx';
 import EditClient from '../Pages/EditClient/EditClient.jsx';
+import ProductListPage from '../Pages/Products/ProductListPage.jsx';
 
 const AppRoutes = () => (
   <Routes>
@@ -108,6 +109,14 @@ const AppRoutes = () => (
       element={
         <PrivateRoute>
           <DashboardLayout><SelectProduct /></DashboardLayout>
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/products"
+      element={
+        <PrivateRoute>
+          <DashboardLayout><ProductListPage /></DashboardLayout>
         </PrivateRoute>
       }
     />

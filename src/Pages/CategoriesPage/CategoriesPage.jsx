@@ -12,14 +12,17 @@ import {
   Stack,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
+import DeleteConfirmDialog from '../../Components/DeleteConfirmDialog/DeleteConfirmDialog';
 const CategoriesPage = () => {
-
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  
   const navigate = useNavigate();
-    const { baseUrl, token } = useContext(Context);
+  const { baseUrl, token } = useContext(Context);
 
   const fetchCategories = async () => {
     try {
@@ -27,6 +30,7 @@ const CategoriesPage = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCategories(response.data || []);
+      console.log(response.data)
     } catch (err) {
       setError("Failed to fetch categories.");
       console.error(err);
@@ -39,18 +43,31 @@ const CategoriesPage = () => {
     fetchCategories();
   }, [baseUrl, token]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+  const handleOpenDeleteDialog = (id) => {
+    setSelectedCategoryId(id);
+    setDeleteDialogOpen(true);
+  };
 
+  const handleCloseDeleteDialog = () => {
+    setSelectedCategoryId(null);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCategoryId) return;
+    setDeleting(true);
     try {
       await axios.delete(`${baseUrl}/dashboard/categories`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { id }
+        params: { id: selectedCategoryId }
       });
-      setCategories((prev) => prev.filter((cat) => cat.id !== id));
+      setCategories((prev) => prev.filter((cat) => cat.id !== selectedCategoryId));
+      handleCloseDeleteDialog();
     } catch (err) {
       console.error("Failed to delete category", err);
       alert("Something went wrong while deleting.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -87,23 +104,24 @@ const CategoriesPage = () => {
               }}
             >
               <CardContent sx={{ height: 'auto' }}>
-                <img
-                  src={`${baseUrl}/public/uploads/${category.categoriesPhoto}`}
-                  alt={category.categoriesName}
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    borderRadius: '10px',
-                    marginBottom: '15px',
-                    objectFit: 'contain',
-                  }}
-                />
+                <div style={{ height: '200px' }}>
+                  <img
+                    src={`${baseUrl}/public/uploads/${category.categoriesPhoto}`}
+                    alt={category.categoriesName}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '10px',
+                      marginBottom: '15px',
+                      objectFit: 'contain',
+                    }}
+                  />
+                </div>
+
                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
                   {category.categoriesName}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ marginTop: '10px' }}>
-                  {category.description || 'No description available.'}
-                </Typography>
+             
 
                 {/* Buttons */}
                 <Stack direction="row" spacing={1} mt={2} justifyContent="space-between">
@@ -117,7 +135,7 @@ const CategoriesPage = () => {
                   <Button
                     variant="outlined"
                     color="error"
-                    onClick={() => handleDelete(category.id)}
+                    onClick={() => handleOpenDeleteDialog(category.id)}
                   >
                     Delete
                   </Button>
@@ -144,6 +162,14 @@ const CategoriesPage = () => {
       >
         Add Category
       </Button>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        deleting={deleting}
+        onClose={handleCloseDeleteDialog}
+        onDelete={handleConfirmDelete}
+      />
     </div>
   );
 };

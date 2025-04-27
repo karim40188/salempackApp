@@ -44,6 +44,7 @@
     align-items: center;
     width: 100%;
     background-color: black;
+    cursor:pointer;
   }
   
   .logo-img {

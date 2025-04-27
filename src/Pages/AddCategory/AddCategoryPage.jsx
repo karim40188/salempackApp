@@ -1,21 +1,44 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Paper,
+  CircularProgress,
+  Alert,
+  Grid,
+  Card,
+  CardMedia
+} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import axios from 'axios';
 import useImageUploader from '../../hooks/useImageUploader';
 import { useNavigate } from 'react-router-dom';
+import { Context } from '../../context/AuthContext';
 
 const AddCategory = () => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const navigate = useNavigate()
-  const uploadImage = useImageUploader(import.meta.env.VITE_BASE_URL, localStorage.getItem('salemPack_token'));
+  const navigate = useNavigate();
+  const { baseUrl, token } = useContext(Context);
+  const uploadImage = useImageUploader(baseUrl, token);
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      // Create a preview URL for the image
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async () => {
@@ -30,9 +53,10 @@ const AddCategory = () => {
 
     try {
       const imageName = await uploadImage(image);
-      console.log(imageName)
+      
       if (!imageName) {
         setError("Image upload failed.");
+        setLoading(false);
         return;
       }
 
@@ -50,7 +74,10 @@ const AddCategory = () => {
       setSuccess("Category added successfully!");
       setTitle('');
       setImage(null);
-      navigate("/categories")
+      setPreviewUrl(null);
+      
+      // Navigate after a short delay to show success message
+      setTimeout(() => navigate("/categories"), 1500);
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error("Error:", err);
@@ -60,41 +87,95 @@ const AddCategory = () => {
   };
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: '#f4f4f4', minHeight: '100vh' }}>
-      <Typography variant="h5" fontWeight="bold" mb={3}>Add New Category</Typography>
+    <Box sx={{ padding: 3, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <Paper elevation={3} sx={{ padding: 4, maxWidth: 800, margin: '0 auto', borderRadius: 2 }}>
+        <Typography variant="h5" fontWeight="bold" mb={4} color="primary">
+          Add New Category
+        </Typography>
 
-      <TextField
-        label="Category Title"
-        fullWidth
-        sx={{ mb: 2 }}
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextField
+              label="Category Title"
+              fullWidth
+              variant="outlined"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+          </Grid>
 
-      <Button
-        variant="contained"
-        component="label"
-        startIcon={<CloudUploadIcon />}
-        sx={{ mb: 2 }}
-      >
-        Upload Image
-        <input type="file" hidden onChange={handleImageChange} />
-      </Button>
-      {image && <Typography>{image.name}</Typography>}
+          <Grid item xs={12} md={6}>
+            <Button
+              variant="outlined"
+              component="label"
+              startIcon={<CloudUploadIcon />}
+              fullWidth
+              sx={{ 
+                height: 56, 
+                borderStyle: 'dashed', 
+                borderWidth: 2, 
+                textTransform: 'none' 
+              }}
+            >
+              Upload Category Image
+              <input 
+                type="file" 
+                hidden 
+                accept="image/*"
+                onChange={handleImageChange} 
+              />
+            </Button>
+            {image && (
+              <Typography variant="body2" color="text.secondary" mt={1}>
+                Selected: {image.name}
+              </Typography>
+            )}
+          </Grid>
 
-      <Box mt={4}>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={handleSave}
-          disabled={loading}
-        >
-          {loading ? "Saving..." : "Save"}
-        </Button>
-      </Box>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {previewUrl ? (
+                <CardMedia
+                  component="img"
+                  image={previewUrl}
+                  alt="Category preview"
+                  sx={{ 
+                    objectFit: 'contain', 
+                    height: '100%', 
+                    width: '100%',
+                    padding: 1
+                  }}
+                />
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Image preview will appear here
+                </Typography>
+              )}
+            </Card>
+          </Grid>
 
-      {error && <Typography color="error" mt={2}>{error}</Typography>}
-      {success && <Typography color="success" mt={2}>{success}</Typography>}
+          <Grid item xs={12}>
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+            
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleSave}
+              disabled={loading}
+              sx={{ 
+                minWidth: 150, 
+                height: 50, 
+                textTransform: 'none',
+                fontWeight: 'bold'
+              }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Save Category"}
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
     </Box>
   );
 };

@@ -18,15 +18,17 @@
 }
 
 .new-order-btn {
-  background-color: green !important;
-  color: white !important;
+  background-color: green;
+  color: white;
   font-weight: bold;
   padding: 6px 20px;
   border-radius: 10px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .new-order-btn:hover {
-  background-color: #388e3c !important;
+  background-color: #388e3c;
+  transform: scale(1.05); /* تكبير الأزرار قليلاً عند التمرير */
 }
 
 .orders-toolbar {
@@ -47,40 +49,64 @@
 }
 
 .MuiTableContainer-root {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* جعل الظل أكثر نعومة */
   border-radius: 8px;
 }
 
 .actions-box {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start; /* وضع الأزرار في الجهة اليسرى */
 }
 
 .edit-btn {
-  background-color: #67c9e4 !important;
+  background-color: #67c9e4;
   color: white;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .edit-btn:hover {
-  background-color: #57bcd9 !important;
+  background-color: #57bcd9;
+  transform: scale(1.05); /* تكبير الأزرار قليلاً عند التمرير */
 }
 
 .reorder-btn {
-  background-color: #ffa726 !important;
+  background-color: #ffa726;
   color: white;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .reorder-btn:hover {
-  background-color: #fb8c00 !important;
+  background-color: #fb8c00;
+  transform: scale(1.05); /* تكبير الأزرار قليلاً عند التمرير */
 }
 
 .invoice-btn {
-  background-color: red !important;
+  background-color: red;
   color: white;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .invoice-btn:hover {
-  background-color: #d32f2f !important;
+  background-color: #d32f2f;
+  transform: scale(1.05); /* تكبير الأزرار قليلاً عند التمرير */
+}
+
+.new-order-btn:focus,
+.edit-btn:focus,
+.reorder-btn:focus,
+.invoice-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .new-order-btn, .edit-btn, .reorder-btn, .invoice-btn {
+    padding: 8px 16px; 
+  }
+
+  .search-input {
+    width: 100%;
+  }
 }

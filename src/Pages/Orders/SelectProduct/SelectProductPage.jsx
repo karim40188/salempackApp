@@ -2,6 +2,43 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Context } from "../../../context/AuthContext";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Checkbox,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment,
+  IconButton,
+  Chip,
+  Box,
+  Divider,
+  Paper,
+  FormControlLabel,
+  OutlinedInput,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  CircularProgress
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  ShoppingCart as ShoppingCartIcon
+} from '@mui/icons-material';
 
 const SelectProductPage = () => {
   const { baseUrl, token } = useContext(Context);
@@ -10,6 +47,8 @@ const SelectProductPage = () => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selected, setSelected] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, productId: null });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +57,7 @@ const SelectProductPage = () => {
   }, [baseUrl, token]);
 
   const fetchProducts = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(`${baseUrl}/dashboard/products`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -36,7 +76,8 @@ const SelectProductPage = () => {
       setProducts(enriched);
     } catch (err) {
       console.error("Failed to fetch products:", err);
-      alert("Failed to load products.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,23 +101,30 @@ const SelectProductPage = () => {
   };
 
   const handleQuantityChange = (id, value) => {
+    const numValue = Math.max(1, Number(value)); // Ensure minimum value is 1
     setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, quantity: Number(value) } : p))
+      prev.map((p) => (p.id === id ? { ...p, quantity: numValue } : p))
     );
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+  const handleDeleteClick = (id) => {
+    setDeleteDialog({ open: true, productId: id });
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`${baseUrl}/dashboard/products?id=${id}`, {
+      await axios.delete(`${baseUrl}/dashboard/products?id=${deleteDialog.productId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert("Product deleted successfully.");
       fetchProducts(); // Refresh list
+      setDeleteDialog({ open: false, productId: null });
     } catch (err) {
-      alert("Failed to delete product.");
       console.error(err);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ open: false, productId: null });
   };
 
   const handleEdit = (product) => {
@@ -93,9 +141,13 @@ const SelectProductPage = () => {
     .filter((p) => selected[p.id])
     .reduce((acc, p) => acc + p.quantity * p.price, 0);
 
+  const selectedProductCount = products.filter(p => selected[p.id]).length;
+
   const handleCreateOrder = async () => {
     const clientId = localStorage.getItem("selectedClientId");
-    if (!clientId) return alert("Client not selected!");
+    if (!clientId) {
+      return;
+    }
 
     const items = products
       .filter((p) => selected[p.id])
@@ -107,7 +159,7 @@ const SelectProductPage = () => {
       }));
 
     if (items.length === 0) {
-      return alert("Please select at least one product!");
+      return;
     }
 
     const orderData = {
@@ -124,227 +176,226 @@ const SelectProductPage = () => {
           "Content-Type": "application/json"
         }
       });
-      alert("Order created successfully!");
       navigate("/orders");
     } catch (error) {
       console.error("Order creation failed:", error);
-      alert("Failed to create order.");
     }
   };
 
   return (
-    <div style={{ padding: '40px', background: '#f5f5f5', minHeight: '100vh' }}>
-      <h2 style={{ textAlign: 'center', fontWeight: 'bold' }}>Create Orders</h2>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
+        <Typography variant="h4" component="h1" align="center" fontWeight="bold" gutterBottom>
+          Create Orders
+        </Typography>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '20px 0', gap: '10px', flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("/add-product")}
+            sx={{ borderRadius: 4, px: 3 }}
+          >
+            Add Product
+          </Button>
 
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+              <OutlinedInput
+                placeholder="Search By Product Name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton edge="end">
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }
+                sx={{ borderRadius: 2 }}
+              />
+            </FormControl>
 
-        <button
-          onClick={() => navigate("/add-product")}
-          style={{
-            backgroundColor: '#2a9700',
-            color: '#fff',
-            padding: '10px 30px',
-            border: 'none',
-            borderRadius: '20px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
-
-        >
-          Add Product
-        </button>
-        <div style={{ display: 'flex', gap:'10px'}}>
-        <div style={{ display: 'flex' }}>
-          <input
-            type="text"
-            placeholder="Search By Product Name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              padding: '10px',
-              width: '300px',
-              borderRadius: '10px 0 0 10px',
-              border: '1px solid #ccc',
-            }}
-          />
-          <button style={{
-            background: '#66c7ea',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '0 10px 10px 0',
-            cursor: 'pointer'
-          }}>
-            🔍
-          </button>
-        </div>
-
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          style={{
-            padding: '10px',
-            borderRadius: '10px',
-            border: '1px solid #ccc',
-            minWidth: '150px'
-          }}
-        >
-          <option value="all">All Categories</option>
-          {categories.map(cat => (
-            <option key={cat.id} value={cat.id}>
-              {cat.categoriesName}
-            </option>
-          ))}
-        </select>
-        </div>
-      
-      </div>
-
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '20px'
-      }}>
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => {
-            const category = getCategoryById(product.categoryId);
-            return (
-              <div
-                key={product.id}
-                style={{
-                  border: '1px solid #ccc',
-                  borderRadius: '10px',
-                  width: '220px',
-                  textAlign: 'center',
-                  background: selected[product.id] ? '#e0f4e0' : '#fff',
-                  position: 'relative',
-                  padding: '10px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
+            <FormControl variant="outlined" sx={{ minWidth: 150 }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                label="Category"
+                sx={{ borderRadius: 2 }}
               >
-                <input
-                  type="checkbox"
-                  checked={!!selected[product.id]}
-                  onChange={() => toggleSelect(product.id)}
-                  style={{
-                    position: 'absolute',
-                    top: 10,
-                    left: 10,
-                    width: '20px',
-                    height: '20px',
-                  }}
-                />
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    backgroundColor: category.color || '#ccc',
-                    color: '#fff',
-                    padding: '2px 6px',
-                    borderRadius: '10px',
-                    fontSize: '10px',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {category.categoriesName}
-                </div>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  style={{ height: '100px', objectFit: 'contain', marginBottom: '10px', marginTop: '10px' }}
-                />
-                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{product.name}</div>
-                <div style={{ fontSize: '12px', color: '#777', margin: '5px 0' }}>{product.specs}</div>
-                <div style={{ fontSize: '13px', color: '#555', fontWeight: 'bold' }}>
-                  ${product.price.toFixed(2)}
-                </div>
+                <MenuItem value="all">All Categories</MenuItem>
+                {categories.map(cat => (
+                  <MenuItem key={cat.id} value={cat.id}>
+                    {cat.categoriesName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </Box>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '10px 0' }}>
-                  <label style={{ marginRight: '5px', fontSize: '12px' }}>Qty:</label>
-                  <input
-                    type="number"
-                    value={product.quantity}
-                    min="1"
-                    onChange={(e) => handleQuantityChange(product.id, e.target.value)}
-                    style={{
-                      padding: '5px',
-                      width: '60px',
-                      borderRadius: '5px',
-                      border: '1px solid #ccc'
-                    }}
-                  />
-                </div>
-
-                <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'space-around' }}>
-                  <button
-                    onClick={() => handleEdit(product)}
-                    style={{
-                      fontSize: '12px',
-                      color: '#fff',
-                      background: '#3498db',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '5px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ✏️ Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product.id)}
-                    style={{
-                      fontSize: '12px',
-                      color: '#fff',
-                      background: '#e74c3c',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '5px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🗑️ Delete
-                  </button>
-                </div>
-              </div>
-            );
-          })
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
+          </Box>
         ) : (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#777' }}>
-            No products found matching your search criteria.
-          </div>
+          <Grid container spacing={3} justifyContent="center">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => {
+                const category = getCategoryById(product.categoryId);
+                return (
+                  <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+                    <Card 
+                      elevation={2}
+                      sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        width:'280px',
+                        borderRadius: 2,
+                        position: 'relative',
+                        bgcolor: selected[product.id] ? 'success.50' : 'background.paper',
+                        transition: 'all 0.3s',
+                        '&:hover': {
+                          boxShadow: 6
+                        }
+                      }}
+                    >
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={!!selected[product.id]}
+                            onChange={() => toggleSelect(product.id)}
+                            sx={{ position: 'absolute', top: 4, left: 4 }}
+                          />
+                        }
+                        label=""
+                      />
+                      <Chip
+                        label={category.categoriesName}
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                          bgcolor: category.color || 'grey.400',
+                          color: 'white',
+                          fontWeight: 'bold'
+                        }}
+                      />
+                      <CardMedia
+                        component="img"
+                        height="120"
+                        image={product.image}
+                        alt={product.name}
+                        sx={{ objectFit: 'contain', pt: 2, pb: 1 }}
+                      />
+                      <CardContent sx={{ flexGrow: 1, pt: 1 }}>
+                        <Typography variant="subtitle1" component="div" fontWeight="bold" noWrap>
+                          {product.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ height: 40, overflow: 'hidden', mb: 1 }}>
+                          {product.specs}
+                        </Typography>
+                        <Typography variant="subtitle2" fontWeight="bold" color="text.primary">
+                          EGP{product.price.toFixed(2)}
+                        </Typography>
+                        
+                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                          <Typography variant="body2" sx={{ mr: 1 }}>Qty:</Typography>
+                          <TextField
+                            type="number"
+                            value={product.quantity}
+                            inputProps={{ min: 1 }}
+                            onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+                            size="small"
+                            variant="outlined"
+                            sx={{ width: 60 }}
+                          />
+                        </Box>
+                      </CardContent>
+
+                      <CardActions sx={{ justifyContent: 'space-between', p: 1, pt: 0 }}>
+                        <Button
+                          size="small"
+                          startIcon={<EditIcon />}
+                          variant="contained"
+                          onClick={() => handleEdit(product)}
+                          sx={{ flex: 1, mr: 1 }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="small"
+                          startIcon={<DeleteIcon />}
+                          variant="contained"
+                          color="error"
+                          onClick={() => handleDeleteClick(product.id)}
+                          sx={{ flex: 1 }}
+                        >
+                          Delete
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                );
+              })
+            ) : (
+              <Box sx={{ textAlign: 'center', width: '100%', py: 4 }}>
+                <Typography color="text.secondary">
+                  No products found matching your search criteria.
+                </Typography>
+              </Box>
+            )}
+          </Grid>
         )}
-      </div>
-      <div>
-        <div style={{ textAlign: 'right', marginTop: '30px' }}>
-          <div style={{ marginBottom: '15px', fontWeight: 'bold', color: '#444', fontSize: '18px' }}>
-            Selected Products: {products.filter(p => selected[p.id]).length}
-          </div>
-          <div style={{ marginBottom: '15px', fontWeight: 'bold', color: '#444', fontSize: '18px' }}>
-            Total Order Price: ${totalAmount.toFixed(2)}
-          </div>
-          <button
-            style={{
-              backgroundColor: '#2a9700',
-              color: '#fff',
-              padding: '10px 30px',
-              border: 'none',
-              borderRadius: '20px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}
+      </Paper>
+
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mt: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Selected Products: <strong>{selectedProductCount}</strong>
+          </Typography>
+          <Typography variant="h6" sx={{ mb: 3 }}>
+            Total Order Price: <strong>EGP{totalAmount.toFixed(2)}</strong>
+          </Typography>
+          <Button
+            variant="contained"
+            color="success"
+            size="large"
+            startIcon={<ShoppingCartIcon />}
             onClick={handleCreateOrder}
-            disabled={products.filter(p => selected[p.id]).length === 0}
+            disabled={selectedProductCount === 0}
+            sx={{ borderRadius: 4, px: 4 }}
           >
             Create Order
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Paper>
 
-    </div>
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialog.open}
+        onClose={handleDeleteCancel}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this product? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 
