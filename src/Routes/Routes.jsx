@@ -1,7 +1,6 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from "../pages/LoginPage/Login.jsx"
 import Home from '../pages/HomePage/Home.jsx';
 import Banners from '../pages/BannersPage/Banners.jsx';
 import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
@@ -22,6 +21,7 @@ import EditOrderPage from '../pages/EditOrderPage/EditOrderPage.jsx';
 import EditBanner from '../pages/EditBanner/EditBanner.jsx';
 import EditClient from '../pages/EditClient/EditClient.jsx';
 import ProductListPage from '../pages/Products/ProductListPage.jsx';
+import Login from '../pages/LoginPage/LoginPage.jsx';
 
 const AppRoutes = () => (
   <Routes>
