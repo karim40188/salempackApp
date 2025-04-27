@@ -1,10 +1,7 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from '../pages/HomePage/Home.jsx';
-import Banners from '../pages/BannersPage/Banners.jsx';
 import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
-import Clients from '../pages/Clients/ClientsPage/ClientPage.jsx';
 import SelectClients from '../pages/Orders/SelectClientPage/SelectCleintPage.jsx';
 import AddClients from '../pages/Clients/AddClients/AddClients.jsx';
 import SelectProduct from '../pages/Orders/SelectProduct/SelectProductPage.jsx';
@@ -12,16 +9,21 @@ import AddProduct from '../pages/AddProduct/AddProduct.jsx';
 import AddCategory from '../pages/AddCategory/AddCategoryPage.jsx';
 import AddBanner from '../pages/AddBanner/AddBanner.jsx';
 import DashboardLayout from '../Layout/Layout.jsx';
-import PrivateRoute from './PrivateRoute';
-import PublicRoute from './PublicRoute';
-import EditProductPage from '../pages/EditProductPage/EditProductPage.jsx';
-import CategoriesPage from '../pages/CategoriesPage/CategoriesPage.jsx';
-import EditCategoryPage from '../pages/EditCategoryPage/EditCategoryPage.jsx';
-import EditOrderPage from '../pages/EditOrderPage/EditOrderPage.jsx';
-import EditBanner from '../pages/EditBanner/EditBanner.jsx';
-import EditClient from '../pages/EditClient/EditClient.jsx';
+
+import Login from '../pages/LoginPage/LoginPage.jsx'
+import Home from '../pages/HomePage/HomePage.jsx';
+import BannerImages from '../pages/BannersPage/Banners.jsx';
 import ProductListPage from '../pages/Products/ProductListPage.jsx';
-import Login from '../pages/LoginPage/LoginPage.jsx';
+import EditClient from '../pages/EditClient/EditClient.jsx';
+import EditBanner from '../pages/EditBanner/EditBanner.jsx';
+import EditOrderPage from '../pages/EditOrderPage/EditOrderPage.jsx';
+import ClientsPage from '../pages/Clients/ClientsPage/ClientPage.jsx';
+import EditCategoryPage from '../pages/EditCategoryPage/EditCategoryPage.jsx';
+import CategoriesPage from '../pages/CategoriesPage/CategoriesPage.jsx';
+import EditProductPage from '../Pages/EditProductPage/EditProductPage.jsx';
+import PublicRoute from './PublicRoute.jsx';
+import PrivateRoute from "./PrivateRoute.jsx"
+
 
 const AppRoutes = () => (
   <Routes>
@@ -48,7 +50,7 @@ const AppRoutes = () => (
       path="/banners"
       element={
         <PrivateRoute>
-          <DashboardLayout><Banners /></DashboardLayout>
+          <DashboardLayout><BannerImages /></DashboardLayout>
         </PrivateRoute>
       }
     />
@@ -74,7 +76,7 @@ const AppRoutes = () => (
       path="/clients"
       element={
         <PrivateRoute>
-          <DashboardLayout><Clients /></DashboardLayout>
+          <DashboardLayout><ClientsPage /></DashboardLayout>
         </PrivateRoute>
       }
     />
