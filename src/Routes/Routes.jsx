@@ -12,7 +12,6 @@ import SelectProduct from '../pages/Orders/SelectProduct/SelectProductPage.jsx';
 import AddProduct from '../Pages/AddProduct/AddProduct.jsx';
 import AddCategory from '../Pages/AddCategory/AddCategoryPage.jsx';
 import AddBanner from '../Pages/AddBanner/AddBanner.jsx';
-
 import DashboardLayout from '../Layout/Layout.jsx';
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
