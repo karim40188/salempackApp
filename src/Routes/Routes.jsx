@@ -1,17 +1,11 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-// import  from "../pages/Orders/OrderPage/OrdersPage.jsx"
-import SelectClients from '../pages/Orders/SelectClientPage/SelectCleintPage.jsx';
+import DashboardLayout from "../Layout/Layout.jsx"
+import AddBanner from "../pages/AddBanner/AddBanner.jsx"
 import AddClients from '../pages/Clients/AddClients/AddClients.jsx';
-import SelectProduct from '../pages/Orders/SelectProduct/SelectProductPage.jsx';
-import AddProduct from '../pages/AddProduct/AddProduct.jsx';
-import AddCategory from '../pages/AddCategory/AddCategoryPage.jsx';
-import AddBanner from '../pages/AddBanner/AddBanner.jsx';
-import DashboardLayout from '../Layout/Layout.jsx';
-
-
-import  Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
+import SelectClient from "../pages/Orders/SelectClientPage/SelectCleintPage.jsx"
+import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
 import Login from '../pages/LoginPage/LoginPage.jsx'
 import Home from '../pages/HomePage/HomePage.jsx';
 import BannerImages from '../pages/BannersPage/Banners.jsx';
@@ -22,9 +16,12 @@ import EditOrderPage from '../pages/EditOrderPage/EditOrderPage.jsx';
 import ClientsPage from '../pages/Clients/ClientsPage/ClientPage.jsx';
 import EditCategoryPage from '../pages/EditCategoryPage/EditCategoryPage.jsx';
 import CategoriesPage from '../pages/CategoriesPage/CategoriesPage.jsx';
-import EditProductPage from '../Pages/EditProductPage/EditProductPage.jsx';
+import EditProductPage from '../pages/EditProductPage/EditProductPage.jsx';
 import PublicRoute from './PublicRoute.jsx';
 import PrivateRoute from "./PrivateRoute.jsx"
+import SelectProductPage from '../pages/Orders/SelectProduct/SelectProductPage.jsx';
+import AddProduct from '../Pages/AddProduct/AddProduct.jsx';
+import AddCategory from '../Pages/AddCategory/AddCategoryPage.jsx';
 
 
 const AppRoutes = () => (
@@ -86,7 +83,7 @@ const AppRoutes = () => (
       path="/select-clients"
       element={
         <PrivateRoute>
-          <DashboardLayout><SelectClients /></DashboardLayout>
+          <DashboardLayout><SelectClient /></DashboardLayout>
         </PrivateRoute>
       }
     />
@@ -99,19 +96,19 @@ const AppRoutes = () => (
       }
     />
     <Route
-     path="/edit-client/:id"
+      path="/edit-client/:id"
       element={
         <PrivateRoute>
           <DashboardLayout><EditClient /></DashboardLayout>
         </PrivateRoute>
       }
     />
- 
+
     <Route
       path="/select-product"
       element={
         <PrivateRoute>
-          <DashboardLayout><SelectProduct /></DashboardLayout>
+          <DashboardLayout><SelectProductPage /></DashboardLayout>
         </PrivateRoute>
       }
     />
