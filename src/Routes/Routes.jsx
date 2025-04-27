@@ -1,7 +1,7 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from '../pages/LoginPage/Login.jsx';
+import Login from "../pages/LoginPage/Login.jsx"
 import Home from '../pages/HomePage/Home.jsx';
 import Banners from '../pages/BannersPage/Banners.jsx';
 import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
