@@ -2,11 +2,11 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from "../Layout/Layout.jsx"
-import AddClients from '../pages/Clients/AddClients/AddClients.jsx';
 import SelectClient from "../pages/Orders/SelectClientPage/SelectCleintPage.jsx"
 import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
 import Login from '../pages/LoginPage/LoginPage.jsx'
 import Home from '../pages/HomePage/HomePage.jsx';
+import AddClientPage from "../pages/Clients/AddClients/AddClients.jsx"
 import BannerImages from '../pages/BannersPage/Banners.jsx';
 import ProductListPage from '../pages/Products/ProductListPage.jsx';
 import EditClient from '../pages/EditClient/EditClient.jsx';
@@ -91,7 +91,7 @@ const AppRoutes = () => (
       path="/add-clients"
       element={
         <PrivateRoute>
-          <DashboardLayout><AddClients /></DashboardLayout>
+          <DashboardLayout><AddClientPage /></DashboardLayout>
         </PrivateRoute>
       }
     />
