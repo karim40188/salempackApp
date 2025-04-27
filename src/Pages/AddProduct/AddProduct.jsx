@@ -28,7 +28,7 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CategoryIcon from '@mui/icons-material/Category';
 import axios from 'axios';
-import { Context } from "../../context/AuthContext";
+import { Context } from "../../context/AuthContext.jsx";
 import useImageUploader from '../../hooks/useImageUploader.js';
 import { useNavigate } from 'react-router-dom';
 
