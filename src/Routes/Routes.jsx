@@ -2,26 +2,26 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from "../Layout/Layout.jsx"
-import Login from '../pages/LoginPage/LoginPage.jsx'
-import Home from '../pages/HomePage/HomePage.jsx';
-import AddClientPage from "../pages/Clients/AddClients/AddClients.jsx"
-import BannerImages from '../pages/BannersPage/Banners.jsx';
-import ProductListPage from '../pages/Products/ProductListPage.jsx';
-import EditClient from '../pages/EditClient/EditClient.jsx';
-import EditBanner from '../pages/EditBanner/EditBanner.jsx';
-import EditOrderPage from '../pages/EditOrderPage/EditOrderPage.jsx';
-import ClientsPage from '../pages/Clients/ClientsPage/ClientPage.jsx';
-import EditCategoryPage from '../pages/EditCategoryPage/EditCategoryPage.jsx';
-import CategoriesPage from '../pages/CategoriesPage/CategoriesPage.jsx';
-import EditProductPage from '../pages/EditProductPage/EditProductPage.jsx';
+import Login from '../Pages/LoginPage/LoginPage.jsx';
+import Home from '../Pages/HomePage/HomePage.jsx';
+import AddClientPage from "../Pages/Clients/AddClients/AddClients.jsx"
+import BannerImages from '../Pages/BannersPage/Banners.jsx';
+import ProductListPage from '../Pages/Products/ProductListPage.jsx';
+import EditClient from '../Pages/EditClient/EditClient.jsx';
+import EditBanner from '../Pages/EditBanner/EditBanner.jsx';
+import EditOrderPage from '../Pages/EditOrderPage/EditOrderPage.jsx';
+import ClientsPage from '../Pages/Clients/ClientsPage/ClientPage.jsx';
+import EditCategoryPage from '../Pages/EditCategoryPage/EditCategoryPage.jsx';
+import CategoriesPage from '../Pages/CategoriesPage/CategoriesPage.jsx';
+import EditProductPage from '../Pages/EditProductPage/EditProductPage.jsx';
 import PublicRoute from './PublicRoute.jsx';
 import PrivateRoute from "./PrivateRoute.jsx"
-import SelectProductPage from '../pages/Orders/SelectProduct/SelectProductPage.jsx';
+import SelectProductPage from '../Pages/Orders/SelectProduct/SelectProductPage.jsx';
 import AddProduct from '../Pages/AddProduct/AddProduct.jsx';
 import AddCategory from '../Pages/AddCategory/AddCategoryPage.jsx';
-import AddBanner from '../pages/AddBanner/AddBannerPage.jsx';
-import SelectClient from '../pages/Orders/SelectClientPage/SelectCleint.jsx';
-import Orders from '../pages/Orders/OrderPage/Orders.jsx';
+import AddBanner from '../Pages/AddBanner/AddBannerPage.jsx';
+import SelectClient from '../Pages/Orders/SelectClientPage/SelectCleint.jsx';
+import Orders from '../Pages/Orders/OrderPage/Orders.jsx';
 
 
 const AppRoutes = () => (
