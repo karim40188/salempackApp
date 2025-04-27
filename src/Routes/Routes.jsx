@@ -1,7 +1,7 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
+// import  from "../pages/Orders/OrderPage/OrdersPage.jsx"
 import SelectClients from '../pages/Orders/SelectClientPage/SelectCleintPage.jsx';
 import AddClients from '../pages/Clients/AddClients/AddClients.jsx';
 import SelectProduct from '../pages/Orders/SelectProduct/SelectProductPage.jsx';
@@ -10,6 +10,8 @@ import AddCategory from '../pages/AddCategory/AddCategoryPage.jsx';
 import AddBanner from '../pages/AddBanner/AddBanner.jsx';
 import DashboardLayout from '../Layout/Layout.jsx';
 
+
+import  Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
 import Login from '../pages/LoginPage/LoginPage.jsx'
 import Home from '../pages/HomePage/HomePage.jsx';
 import BannerImages from '../pages/BannersPage/Banners.jsx';
