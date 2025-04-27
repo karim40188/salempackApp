@@ -1,9 +1,9 @@
 import React from 'react';
 import theme from '../../Theme/theme';
-import LeftSidebar from '../../components/Home/OrderStatsSidebar/OrderStatsSidebar';
-import TopStats from '../../components/Home/TopStatsSection/TopStatsSection';
-import OrdersTable from '../../components/Home/OrdersTable/OrdersTable';
-import NextTasksPanel from '../../components/Home/NextTasks/NextTasks';
+import LeftSidebar from '../../Components/Home/OrderStatsSidebar/OrderStatsSidebar';
+import TopStats from '../../Components/Home/TopStatsSection/TopStatsSection';
+import OrdersTable from '../../Components/Home/OrdersTable/OrdersTable';
+import NextTasksPanel from '../../Components/Home/NextTasks/NextTasks';
 
 const Home = () => {
   return (
