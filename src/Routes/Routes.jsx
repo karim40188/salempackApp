@@ -2,7 +2,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from "../Layout/Layout.jsx"
-import SelectClient from "../pages/Orders/SelectClientPage/SelectCleintPage.jsx"
 import Orders from "../pages/Orders/OrderPage/OrdersPage.jsx"
 import Login from '../pages/LoginPage/LoginPage.jsx'
 import Home from '../pages/HomePage/HomePage.jsx';
@@ -22,6 +21,7 @@ import SelectProductPage from '../pages/Orders/SelectProduct/SelectProductPage.j
 import AddProduct from '../Pages/AddProduct/AddProduct.jsx';
 import AddCategory from '../Pages/AddCategory/AddCategoryPage.jsx';
 import AddBanner from '../pages/AddBanner/AddBannerPage.jsx';
+import SelectClient from '../pages/Orders/SelectClientPage/SelectCleint.jsx';
 
 
 const AppRoutes = () => (

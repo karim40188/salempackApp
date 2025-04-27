@@ -20,7 +20,7 @@ import { debounce } from "lodash";
 import axios from "axios";
 import { Context } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import "./SelectClientPageStyle.css";
+import "./SelectClientStyle.css";
 
 const SelectClient = () => {
   const { baseUrl, token } = useContext(Context);
