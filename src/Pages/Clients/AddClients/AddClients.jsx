@@ -53,6 +53,7 @@ const AddClientPage = () => {
   const handleLogoChange = (e) => {
     setFormData((prev) => ({ ...prev, logo: e.target.files[0] }));
   };
+  
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
@@ -71,6 +72,7 @@ const AddClientPage = () => {
           {
             ...selectedProduct,
             MinimumQuantity: 1,
+            customPrice: selectedProduct.productPrice // Initialize with the original price
           },
         ],
       }));
@@ -97,7 +99,6 @@ const AddClientPage = () => {
     } = formData;
 
     if (!companyName || !employeeName || !email || !password || password !== confirmPassword || !logo || selectedProducts.length === 0) {
-
       setSnackbar({
         open: true,
         message: 'Please fill all fields and select at least one product.',
@@ -116,11 +117,9 @@ const AddClientPage = () => {
       return;
     }
 
-
     try {
       const logoPath = await uploadImage(logo);
       if (!logoPath) {
-
         setSnackbar({
           open: true,
           message: 'Failed to upload logo image. Please try again.',
@@ -141,7 +140,7 @@ const AddClientPage = () => {
         products: selectedProducts.map((product) => ({
           productid: product.id,
           product: product.productName,
-          Price: product.productPrice,
+          Price: product.customPrice || product.productPrice, // Use customPrice if set
           MinimumQuantity: product.MinimumQuantity,
         })),
       };
@@ -258,7 +257,6 @@ const AddClientPage = () => {
               {showConfirmPassword ? 'Hide' : 'Show'}
             </button>
           </div>
-
         </div>
       </div>
 
@@ -267,23 +265,52 @@ const AddClientPage = () => {
           <div key={product.id} className="product-card">
             <img src={`${baseUrl}/public/uploads/${product.productPhoto}`} alt={product.productName} style={{ height: '80px', objectFit: 'contain' }} />
             <div style={{ fontSize: '12px', marginTop: '5px' }}>
-              {product.productName}<br />Price: ${product.productPrice}
+              {product.productName}
             </div>
-            <input
-              type="number"
-              min="1"
-              value={product.MinimumQuantity}
-              onChange={(e) => {
-                const newQuantity = parseInt(e.target.value);
-                setFormData((prev) => ({
-                  ...prev,
-                  selectedProducts: prev.selectedProducts.map((p) =>
-                    p.id === product.id ? { ...p, MinimumQuantity: newQuantity } : p
-                  ),
-                }));
-              }}
-              style={{ width: '60px', marginTop: '5px' }}
-            />
+            
+            {/* Price Field */}
+            <div className="product-field">
+              <label>Price (EGP):</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={product.customPrice || product.productPrice}
+                onChange={(e) => {
+                  const newPrice = parseFloat(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    selectedProducts: prev.selectedProducts.map((p) =>
+                      p.id === product.id ? { ...p, customPrice: newPrice } : p
+                    ),
+                  }));
+                }}
+                style={{ width: '70px' }}
+                className="product-input"
+              />
+            </div>
+            
+            {/* Quantity Field */}
+            <div className="product-field">
+              <label>Min. Quantity:</label>
+              <input
+                type="number"
+                min="1"
+                value={product.MinimumQuantity}
+                onChange={(e) => {
+                  const newQuantity = parseInt(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    selectedProducts: prev.selectedProducts.map((p) =>
+                      p.id === product.id ? { ...p, MinimumQuantity: newQuantity } : p
+                    ),
+                  }));
+                }}
+                style={{ width: '60px' }}
+                className="product-input"
+              />
+            </div>
+            
             <button onClick={() => handleRemoveProduct(product.id)} className="remove-btn">
               Remove
             </button>
