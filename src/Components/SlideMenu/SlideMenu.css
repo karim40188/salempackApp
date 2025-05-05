@@ -2,30 +2,45 @@
   display: flex;
   align-items: center;
   color: white;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 9px 20px;
+  font-size: 15px;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background-color 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.3s ease;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+  box-shadow: inset 4px 0 0 0 #4caf50;
 }
 
 .menu-icon {
-  margin-right: 12px;
-  font-size: 20px;
+  margin-right: 15px;
+  font-size: 22px;
+  color: #1976d2;
+  opacity: 0.85;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover .menu-icon {
+  color: white;
+  opacity: 1;
 }
 
 .menu-container {
-  background-color: #000000;
+  background-color: #111111;
+  background-image: linear-gradient(45deg, #101010, #1a1a1a);
   height: 100vh;
   position: fixed;
   top: 0;
   width: 300px;
   z-index: 1001;
   transition: left 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+  overflow-x: hidden !important;
 }
 
 .menu-overlay {
@@ -35,28 +50,65 @@
   height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
   z-index: 1000;
   display: none;
+  opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .menu-overlay.show {
   display: block;
+  opacity: 1;
 }
 
 .logo-wrapper {
-  padding-top: 50px;
-  padding-bottom: 30px;
+  padding-top: 25px;
+  padding-bottom: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.4);
   cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 10px;
 }
 
 .logo-img {
   height: auto !important;
-  max-width: 100%;
+  max-width: 80%;
   object-fit: contain;
+}
+
+/* Custom style for the logout button */
+.menu-item[style*="color: #f44336"] {
+  margin-top: 20px;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: calc(100% - 20px);
+  border-bottom: none;
+}
+
+.menu-item[style*="color: #f44336"] .menu-icon {
+  color: #f44336;
+}
+
+.menu-item[style*="color: #f44336"]:hover {
+  background-color: rgba(244, 67, 54, 0.2);
+  box-shadow: none;
+  transform: translateX(0);
+}
+
+/* Add section label */
+.menu-section {
+  padding: 6px 20px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 15px;
+  font-weight: 600;
 }
