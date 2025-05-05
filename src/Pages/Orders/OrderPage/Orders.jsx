@@ -97,7 +97,11 @@ const Orders = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+  // Helper function to format date
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("en-GB");
+  };
   // Filter orders based on search term
   const filteredOrders = orders.filter(
     (order) =>
@@ -116,11 +120,7 @@ const Orders = () => {
     page * rowsPerPage + rowsPerPage
   );
 
-  // Helper function to format date
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("en-GB");
-  };
+
 
   return (
     <Box className="orders-container">

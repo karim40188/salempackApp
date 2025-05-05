@@ -247,6 +247,7 @@ const ClientsPage = () => {
                     sx={{ 
                       height: "100%", 
                       objectFit: "contain",
+                      width:"250px",
                       maxWidth: "100%"
                     }}
                     onError={(e) => {
