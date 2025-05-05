@@ -21,6 +21,8 @@ import {
   Divider,
   IconButton,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -48,6 +50,11 @@ const EditProductPage = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   useEffect(() => {
     const fetchProductAndCategories = async () => {
@@ -103,7 +110,11 @@ const EditProductPage = () => {
     if (product.photo instanceof File) {
       uploadedPhoto = await uploadImage(product.photo);
       if (!uploadedPhoto) {
-        alert('Image upload failed');
+        setAlert({
+          open: true,
+          message: "Image upload failed",
+          severity: "error"
+        });
         setSubmitting(false);
         return;
       }
@@ -112,7 +123,7 @@ const EditProductPage = () => {
     const updatedProduct = {
       productName: product.name,
       productDescription: product.description,
-      productPrice: product.price,
+      productPrice: Number(product.price),
       productCategory: product.category,
       productPhoto: uploadedPhoto,
     };
@@ -124,11 +135,19 @@ const EditProductPage = () => {
           'Content-Type': 'application/json',
         },
       });
-      alert('Product updated successfully!');
+      setAlert({
+        open: true,
+        message: "Product updated successfully!",
+        severity: "success"
+      });
       navigate('/products');
     } catch (error) {
       console.error('Error updating product:', error);
-      alert('Failed to update product.');
+      setAlert({
+        open: true,
+        message: "Failed to update product.",
+        severity: "error"
+      });
     } finally {
       setSubmitting(false);
     }
@@ -149,19 +168,19 @@ const EditProductPage = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          maxWidth: 900, 
-          mx: 'auto', 
-          p: { xs: 3, md: 4 }, 
+      <Paper
+        elevation={3}
+        sx={{
+          maxWidth: 900,
+          mx: 'auto',
+          p: { xs: 3, md: 4 },
           borderRadius: 2,
           boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <IconButton 
-            onClick={() => navigate('/products')} 
+          <IconButton
+            onClick={() => navigate('/products')}
             sx={{ mr: 2, bgcolor: 'rgba(0,0,0,0.04)' }}
           >
             <ArrowBackIcon />
@@ -177,15 +196,15 @@ const EditProductPage = () => {
           <Grid container spacing={4}>
             {/* Left Column - Image */}
             <Grid item xs={12} md={4}>
-              <Card 
-                elevation={2} 
-                sx={{ 
+              <Card
+                elevation={2}
+                sx={{
                   borderRadius: 2,
                   overflow: 'hidden',
                   transition: 'transform 0.3s',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                  } 
+                  }
                 }}
               >
                 <Box sx={{ position: 'relative', paddingTop: '100%' }}>
@@ -212,12 +231,12 @@ const EditProductPage = () => {
                     style={{ display: 'none' }}
                   />
                   <label htmlFor="photo-upload">
-                    <Button 
-                      variant="contained" 
+                    <Button
+                      variant="contained"
                       component="span"
                       startIcon={<CloudUploadIcon />}
                       fullWidth
-                      sx={{ 
+                      sx={{
                         py: 1.2,
                         bgcolor: '#6366F1',
                         '&:hover': {
@@ -326,8 +345,8 @@ const EditProductPage = () => {
                 <Button
                   variant="outlined"
                   onClick={() => navigate('/products')}
-                  sx={{ 
-                    mr: 2, 
+                  sx={{
+                    mr: 2,
                     px: 3,
                     borderRadius: 2,
                     borderWidth: 2,
@@ -344,10 +363,10 @@ const EditProductPage = () => {
                   color="success"
                   disabled={submitting}
                   startIcon={<SaveIcon />}
-                  sx={{ 
-                    px: 4, 
-                    py: 1.2, 
-                    fontWeight: 'bold', 
+                  sx={{
+                    px: 4,
+                    py: 1.2,
+                    fontWeight: 'bold',
                     borderRadius: 2,
                     boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                   }}
@@ -359,6 +378,22 @@ const EditProductPage = () => {
           </Grid>
         </form>
       </Paper>
+      
+            <Snackbar
+              open={alert.open}
+              autoHideDuration={6000}
+              onClose={() => setAlert({ ...alert, open: false })}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+              <Alert
+                onClose={() => setAlert({ ...alert, open: false })}
+                severity={alert.severity}
+                variant="filled"
+                sx={{ width: '100%' }}
+              >
+                {alert.message}
+              </Alert>
+            </Snackbar>
     </Box>
   );
 };

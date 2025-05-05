@@ -44,6 +44,7 @@ const Orders = () => {
         setOrders(res.data);
         setError(null);
       } catch (err) {
+        console.log(err)
         setError(
           err.response?.status === 401
             ? "Unauthorized. Please log in again."

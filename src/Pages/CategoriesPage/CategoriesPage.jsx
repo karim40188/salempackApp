@@ -30,7 +30,6 @@ const CategoriesPage = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCategories(response.data || []);
-      console.log(response.data)
     } catch (err) {
       setError("Failed to fetch categories.");
       console.error(err);

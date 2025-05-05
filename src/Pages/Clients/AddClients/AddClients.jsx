@@ -16,6 +16,7 @@ const AddClientPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    mobileNumber: '',  // Added mobile number field
     logo: null,
     selectedProducts: [],
   });
@@ -28,7 +29,8 @@ const AddClientPage = () => {
         });
         setProducts(res.data);
       } catch (err) {
-        console.error('Failed to load products:', err);
+        // console.error('Failed to load products:', err);
+        console.log(err)
       }
     };
     fetchProducts();
@@ -71,25 +73,40 @@ const AddClientPage = () => {
       email,
       password,
       confirmPassword,
+      mobileNumber,
       logo,
       selectedProducts,
     } = formData;
 
+    // Validate required fields
     if (!companyName || !employeeName || !email || !password || password !== confirmPassword || !logo || selectedProducts.length === 0) {
       alert('Please fill all fields and select at least one product.');
       return;
     }
 
     try {
-      const uploadedLogo = await uploadImage(logo); // returns filename
+      // Upload logo using the custom hook
+      const logoPath = await uploadImage(logo);
+      
+      if (!logoPath) {
+        alert('Failed to upload logo image. Please try again.');
+        return;
+      }
+      
+      // Extract just the filename from the path if needed
+      // Sometimes the API returns a full path, but we might only need the filename
+      const logoFilename = logoPath.split('/').pop();
+      
+      // Updated payload structure to match new API requirements
       const payload = {
         username: employeeName,
         CompanyName: companyName,
-        MobileNumber: '00000000000', // optional/fixed or add field for it
-        Logo: uploadedLogo,
+        MobileNumber: mobileNumber || '00000000000', // Use entered mobile number or default
+        Logo: logoFilename, // Make sure this is just the filename string
         Email: email,
         Password: password,
         products: selectedProducts.map((product) => ({
+          productid: product.id,  // Include productid as required by the updated API
           product: product.productName,
           Price: product.productPrice,
           MinimumQuantity: 1, // default if required by backend
@@ -104,7 +121,8 @@ const AddClientPage = () => {
       navigate("/clients")
       console.log(res.data);
     } catch (err) {
-      console.error('Failed to create client:', err);
+      // console.error('Failed to create client:', err);
+      console.log(err)
       alert('Error creating client.');
     }
   };
@@ -129,6 +147,14 @@ const AddClientPage = () => {
             placeholder="Employee Name"
             className="input-style"
             value={formData.employeeName}
+            onChange={handleInputChange}
+          />
+          <input
+            name="mobileNumber"
+            type="text"
+            placeholder="Mobile Number"
+            className="input-style"
+            value={formData.mobileNumber}
             onChange={handleInputChange}
           />
           <input

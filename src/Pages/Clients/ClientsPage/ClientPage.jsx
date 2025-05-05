@@ -77,6 +77,7 @@ const ClientsPage = () => {
       setDeleteDialogOpen(false);
       setClientToDelete(null);
     } catch (err) {
+      console.log(err)
       setError("Failed to delete client. Please try again.");
     } finally {
       setDeleting(false);

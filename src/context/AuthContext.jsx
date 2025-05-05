@@ -6,6 +6,7 @@ export const Context = createContext(null);
 export function ContextProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("salemPack_token") || null);
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const [lastFiveOrders, setLastFiveOrders] = useState([])
 
   useEffect(() => {
     const storedToken = localStorage.getItem("salemPack_token");
@@ -13,7 +14,7 @@ export function ContextProvider({ children }) {
   }, []);
 
   return (
-    <Context.Provider value={{ token, setToken, baseUrl }}>
+    <Context.Provider value={{ token, setToken, baseUrl}}>
       {children}
     </Context.Provider>
   );

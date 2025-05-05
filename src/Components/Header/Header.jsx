@@ -9,12 +9,12 @@ import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-const navigate = useNavigate()
+  const navigate = useNavigate()
   return (
     <>
       <AppBar position="static" className="header-appbar">
         <Toolbar className="header-toolbar">
-          <Box onClick={()=>navigate("/")} display="flex" alignItems="center" className="logo-box">
+          <Box onClick={() => navigate("/")} display="flex" alignItems="center" className="logo-box">
             <img src={WhiteLogo} alt="Logo" className="logo-img" />
           </Box>
 

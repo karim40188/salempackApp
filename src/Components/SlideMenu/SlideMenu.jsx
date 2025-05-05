@@ -34,11 +34,13 @@ const SlideMenu = ({ isOpen, onClose }) => {
         </Box>
 
         <a className="menu-item" href="/">Home</a>
+        <a className="menu-item" href="/admins">Admins</a>
         <a className="menu-item" href="/banners">Banners</a>
         <a className="menu-item" href="/orders">Orders</a>
         <a className="menu-item" href="/products">Products</a>
         <a className="menu-item" href="/clients">Clients</a>
         <a className="menu-item" href="/categories">Categories</a>
+        <a className="menu-item" href="/send-sms">Send SMS</a>
 
         <a className="menu-item" onClick={handleLogout} style={{ cursor: 'pointer', color: '#f44336' }}>
           Logout

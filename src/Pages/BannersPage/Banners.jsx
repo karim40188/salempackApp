@@ -84,7 +84,7 @@ const BannerImages = () => {
           <Grid item xs={12} md={4} key={banner.id}>
             <Paper className="banner-box" elevation={3}>
               <img
-                src={`${baseUrl}/public/uploads/${banner.sliderPhoto}`} // عرض الصورة من الـ API
+                src={`${baseUrl}/public/uploads/${banner.sliderPhoto}`} 
                 alt={banner.sliderAltPhoto}
                 className="banner-image"
               />

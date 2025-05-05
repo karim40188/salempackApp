@@ -1,5 +1,3 @@
-/* LoginStyle.css */
-
 .login-container {
   height: 100vh;
   width: 100vw;
@@ -9,21 +7,12 @@
   background-color: #ffffff;
 }
 
-.login-paper {
-  display: flex;
-  width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: none;
-  background-color: #ffffff;
-}
 
 .login-image {
   flex: 1;
   background-size: cover;
   background-position: center;
+  min-height: 300px;
 }
 
 .login-form {
@@ -39,33 +28,11 @@
 .login-form .MuiTextField-root {
   margin-bottom: 20px;
   background-color: transparent;
+  width: 100%;
 }
 
 .login-form input {
   font-size: 14px;
-}
-
-.login-button {
-  width: 80%;
-  padding: 10px;
-  border-radius: 30px;
-  background: linear-gradient(to right, #5ec8f0, #0077a3);
-  color: white;
-  font-size: 18px;
-  text-transform: none;
-  margin-top: 20px;
-}
-
-.login-button:hover {
-  background: linear-gradient(to right, #50b8e0, #00688f);
-}
-/* Add this below your existing CSS */
-
-.reset-password {
-  width: 100%;
-  text-align: right;
-  margin-top: -10px;
-  margin-bottom: 20px;
 }
 
 .login-button {
@@ -76,7 +43,97 @@
   color: white;
   font-size: 18px;
   text-transform: none;
-  margin-top: 10px; /* reduces space between reset password and button */
+  margin-top: 10px;
+}
+
+.login-paper {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  /* max-width: 1000px; */
+  height: 100vh;
+  border-radius: 10px;
+  /* overflow: hidden; */
+  background-color: #ffffff;
 }
 
 
+.login-button:hover {
+  background: linear-gradient(to right, #50b8e0, #00688f);
+}
+
+.reset-password {
+  width: 100%;
+  text-align: right;
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
+/* ✅ Responsive Design */
+
+
+@media (max-width: 768px) {
+  .login-paper {
+    flex-direction: column;
+    width: 100%;
+    /* margin: 20px 0; */
+    height:100vh !important;
+  }
+
+  .login-image {
+    height: 200px;
+  }
+
+  .login-form {
+    padding: 30px 20px;
+    width:90% !important;
+  }
+
+  .login-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 960px) {
+  .login-paper {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .login-image {
+    width: 100%;
+    height: 200px;
+  }
+
+  .login-form {
+    padding: 40px 20px;
+    width: 100%;
+  }
+
+  .login-button {
+    width: 100%;
+  }
+
+  .reset-password {
+    text-align: center;
+  }
+
+  .login-form img {
+    width: 60%;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-form {
+    padding: 30px 15px;
+  }
+
+  .login-button {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .login-form img {
+    width: 70%;
+  }
+}

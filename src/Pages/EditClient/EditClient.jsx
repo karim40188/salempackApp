@@ -140,7 +140,7 @@ const EditClient = () => {
       });
       
       // Navigate back after successful update and short delay
-      setTimeout(() => navigate('/select-clients'), 1500);
+      setTimeout(() => navigate('/clients'), 1500);
     } catch (err) {
       console.error('Error updating client:', err);
       setMessage({

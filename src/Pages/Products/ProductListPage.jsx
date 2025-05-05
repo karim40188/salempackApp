@@ -97,7 +97,6 @@ const ProductListPage = () => {
     setDeleteDialogOpen(false);
     setProductToDelete(null);
   };
-
   const confirmDelete = async () => {
     if (!productToDelete) return;
     
@@ -110,12 +109,20 @@ const ProductListPage = () => {
       setDeleting(false);
       closeDeleteDialog();
     } catch (err) {
-      alert("Failed to delete product.");
       console.error(err);
       setDeleting(false);
+      
+      // Check for foreign key constraint error
+      if (err.response && 
+          err.response.data && 
+          err.response.data.message && 
+          err.response.data.message.includes("foreign key constraint fails")) {
+        alert("This product cannot be deleted because it's currently used by one or more clients. You need to remove it from all clients first.");
+      } else {
+        alert("Failed to delete product.");
+      }
     }
   };
-
   const handleEdit = (product) => {
     navigate(`/edit-product/${product.id}`, { state: product });
   };

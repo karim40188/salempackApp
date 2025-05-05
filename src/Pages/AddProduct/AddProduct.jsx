@@ -32,14 +32,6 @@ import { Context } from "../../context/AuthContext.jsx";
 import useImageUploader from '../../hooks/useImageUploader.js';
 import { useNavigate } from 'react-router-dom';
 
-const categories = [
-  { id: 1, name: 'Cups' },
-  { id: 2, name: 'Plates' },
-  { id: 3, name: 'Boxes' }
-];
-
-
-
 const AddProduct = () => {
 
   const [categories, setCategories] = useState([])

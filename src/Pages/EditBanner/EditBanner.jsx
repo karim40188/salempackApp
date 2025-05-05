@@ -231,8 +231,8 @@ const EditBanner = () => {
               error={!sliderAltPhoto.trim()}
             />
 
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-              <Box>
+            <Box  sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' ,flexWrap:"wrap", gap:'10px',}} >
+              <Box sx={{display:"flex"}}>
                 <Button
                   variant="contained"
                   color="primary"
@@ -257,6 +257,8 @@ const EditBanner = () => {
                   variant="outlined"
                   onClick={() => navigate('/banners')}
                   sx={{ ml: 2, height: 48, borderRadius: 2 }}
+                 
+           
                 >
                   Cancel
                 </Button>

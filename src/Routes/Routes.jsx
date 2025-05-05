@@ -22,6 +22,14 @@ import AddCategory from '../Pages/AddCategory/AddCategoryPage.jsx';
 import AddBanner from '../Pages/AddBanner/AddBannerPage.jsx';
 import SelectClient from '../Pages/Orders/SelectClientPage/SelectCleint.jsx';
 import Orders from '../Pages/Orders/OrderPage/Orders.jsx';
+import Admins from '../Pages/Admins/Admins.jsx';
+import SendCodePage from '../Pages/Admins/SendCodePage.jsx';
+// import CheckCodePage from '../Pages/Admins/CheckCodePage.jsx';
+
+import ResetPasswordPage from '../Pages/Admins/ResetPasswordPage.jsx';
+import CheckCodePage from '../Pages/Admins/CheckCodePage.jsx';
+import Test from '../Pages/Test/Test.jsx';
+import ClientsSMSDashboard from '../Pages/ClientsSMSDashboard/ClientsSMSDashboard.jsx';
 
 
 const AppRoutes = () => (
@@ -36,6 +44,7 @@ const AppRoutes = () => (
       }
     />
 
+
     {/* Private Routes with Layout */}
     <Route
       path="/"
@@ -45,6 +54,61 @@ const AppRoutes = () => (
         </PrivateRoute>
       }
     />
+    <Route
+      path="/send-sms"
+      element={
+        <PrivateRoute>
+          <DashboardLayout><ClientsSMSDashboard /></DashboardLayout>
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/admins"
+      element={
+        <PrivateRoute>
+          <DashboardLayout><Admins /></DashboardLayout>
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/reset-password"
+      element={
+        <PublicRoute>
+
+          <SendCodePage />
+        </PublicRoute>
+
+      }
+    />
+    <Route
+      path="/check-code"
+      element={
+        <PublicRoute>
+          <CheckCodePage />
+        </PublicRoute>
+      }
+    />
+    <Route
+      path="/reset-password/new"
+      element={
+        <PublicRoute>
+          <ResetPasswordPage />
+        </PublicRoute>
+      }
+    />
+
+
+
+
+
+
+
+
+
+
+
+
+
     <Route
       path="/banners"
       element={

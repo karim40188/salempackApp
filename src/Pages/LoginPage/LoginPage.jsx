@@ -50,6 +50,7 @@ const Login = () => {
   return (
     <AuthLayout>
       <Paper elevation={3} className="login-paper">
+
         <Box
           className="login-image"
           style={{ backgroundImage: `url(${loginImage})` }}
@@ -100,7 +101,7 @@ const Login = () => {
           />
 
           <Box className="reset-password">
-            <Typography variant="caption" sx={{ cursor: 'pointer' }}>
+            <Typography onClick={() => navigate("/reset-password")} variant="caption" sx={{ cursor: 'pointer' }}>
               Reset Password
             </Typography>
           </Box>

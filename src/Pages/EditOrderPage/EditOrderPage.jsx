@@ -4,7 +4,8 @@ import {
   Grid, Paper, Container, Alert, Breadcrumbs, Link, Chip,
   TableContainer, Table, TableHead, TableBody, TableRow,
   TableCell, Card, CardHeader, CardContent, Select, FormControl, InputLabel,
-  IconButton, Avatar, Divider
+  IconButton, Avatar, Divider,
+  Snackbar
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
@@ -15,15 +16,20 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { Context } from "../../context/AuthContext";
 
+
 const ORDER_STATUSES = {
   PENDING: { label: 'Pending', color: 'warning' },
-  PROCESSING: { label: 'Processing', color: 'info' },
-  SHIPPED: { label: 'Shipped', color: 'primary' },
-  DELIVERED: { label: 'Delivered', color: 'success' },
-  COMPLETED: { label: 'Completed', color: 'success' },
+  ACCEPTED: { label: 'Accepted', color: 'info' },
+  MANUFACTURING: { label: 'Manufacturing', color: 'primary' },
+  PRINTING: { label: 'Printing', color: 'primary' },
+  PACKAGING: { label: 'Packaging', color: 'info' },
+  DELIVERING: { label: 'Delivering', color: 'warning' },
+  FINISHED: { label: 'Finished', color: 'success' },
   CANCELLED: { label: 'Cancelled', color: 'error' },
-  ON_HOLD: { label: 'On Hold', color: 'default' },
 };
+
+// Order type options
+const ORDER_TYPES = ["cup", "corrugated box"];
 
 const EditOrderPage = () => {
   const { id } = useParams();
@@ -35,7 +41,12 @@ const EditOrderPage = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+    const [alert, setAlert] = useState({
+      open: false,
+      message: '',
+      severity: 'success'
+    });
+  // const [success, setSuccess] = useState(false);
 
   // Fetch order details
   const fetchOrder = async () => {
@@ -47,9 +58,11 @@ const EditOrderPage = () => {
       console.log(data)
       setOrder(data);
       setError(null);
+
+  
     } catch (err) {
       console.error("Error fetching order:", err);
-      setError("Failed to load order details. Please try again.");
+      // setError("Failed to load order details. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,15 +71,16 @@ const EditOrderPage = () => {
   // Fetch available products
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get(`${baseUrl}/dashboard/products`, {
+      const { data } = await axios.get(`${baseUrl}/dashboard/clients/${order.clientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setProducts(data);
+  
+      setProducts(data.ClientProducts || []);
     } catch (err) {
-      console.error("Error fetching products:", err);
-      setError("Failed to load products.");
+      console.error("Error fetching client's products:", err);
     }
   };
+  
 
   useEffect(() => {
     fetchOrder();
@@ -94,17 +108,17 @@ const EditOrderPage = () => {
 
   const handleDeleteItem = (index) => {
     if (order.items.length === 1) {
-      setError("Order must have at least one item");
+      // setError("Order must have at least one item");
       return;
     }
-    
+
     const updatedItems = order.items.filter((_, i) => i !== index);
     updateOrderTotal(updatedItems);
   };
 
   const handleAddItem = () => {
     if (products.length === 0) return;
-    
+
     const defaultProduct = products[0];
     const newItem = {
       product: defaultProduct.productName,
@@ -113,19 +127,20 @@ const EditOrderPage = () => {
       Quantity: 1,
       TotalLine: defaultProduct.productPrice
     };
-    
+
     const updatedItems = [...order.items, newItem];
     updateOrderTotal(updatedItems);
   };
-
   const handleUpdate = async () => {
     setUpdating(true);
     try {
       const updatedOrder = {
-        clientId: order.clientId, // Keeping this in the request but not allowing edits
+        clientId: order.clientId,
         total: order.total,
+        type: order.type || "cup",
         status: order.status,
         items: order.items.map(item => ({
+          productid: getProductIdFromName(item.product), // Add this function to get productid
           product: item.product,
           Price: item.Price,
           Quantity: item.Quantity,
@@ -135,9 +150,19 @@ const EditOrderPage = () => {
       await axios.patch(`${baseUrl}/dashboard/orders/${id}`, updatedOrder, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccess(true);
+      setAlert({
+        open: true,
+        message: "Order updated successfully",
+        severity: "success"
+      });
+   
       setTimeout(() => navigate("/orders"), 1500);
     } catch (err) {
+      setAlert({
+        open: true,
+        message: "Failed to edit order",
+        severity: "error"
+      });
       console.error("Error updating order:", err);
       setError("Failed to update order. Please try again.");
     } finally {
@@ -145,6 +170,11 @@ const EditOrderPage = () => {
     }
   };
 
+  const getProductIdFromName = (productName) => {
+    const product = products.find(p => p.productName === productName);
+    return product?.id || null; // Return the product ID or null if not found
+  };
+  
   const getStatusChip = (status) => {
     const statusKey = status.toUpperCase().replace(' ', '_');
     const statusInfo = ORDER_STATUSES[statusKey] || { label: status, color: 'default' };
@@ -189,8 +219,8 @@ const EditOrderPage = () => {
         <Typography color="text.primary">Edit Order #{order.code}</Typography>
       </Breadcrumbs>
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 3 }}>Order updated successfully!</Alert>}
+      {/* {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 3 }}>Order updated successfully!</Alert>} */}
 
       {/* Order Details */}
       <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden', mb: 4 }}>
@@ -219,7 +249,7 @@ const EditOrderPage = () => {
                       <TextField label="Client ID" fullWidth value={order.clientId} InputProps={{ readOnly: true }} size="small" sx={{ mb: 2 }} />
                     </Grid>
                     <Grid item xs={12}>
-                      <FormControl fullWidth size="small">
+                      <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                         <InputLabel>Status</InputLabel>
                         <Select
                           value={order.status}
@@ -229,6 +259,22 @@ const EditOrderPage = () => {
                           {Object.keys(ORDER_STATUSES).map((key) => (
                             <MenuItem key={key} value={ORDER_STATUSES[key].label.toLowerCase()}>
                               {ORDER_STATUSES[key].label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormControl fullWidth size="small">
+                        <InputLabel>Type</InputLabel>
+                        <Select
+                          value={order.type || "cup"}
+                          label="Type"
+                          onChange={(e) => setOrder({ ...order, type: e.target.value })}
+                        >
+                          {ORDER_TYPES.map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
                             </MenuItem>
                           ))}
                         </Select>
@@ -274,9 +320,9 @@ const EditOrderPage = () => {
       <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden', mb: 3 }}>
         <Box sx={{ p: 3, backgroundColor: '#f9f9f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" fontWeight="bold">Order Items</Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
+          <Button
+            variant="contained"
+            color="primary"
             startIcon={<AddCircleIcon />}
             onClick={handleAddItem}
           >
@@ -314,8 +360,8 @@ const EditOrderPage = () => {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <Avatar 
-                      src={item.productImage || getProductImage(item.product)} 
+                    <Avatar
+                      src={item.productImage || getProductImage(item.product)}
                       alt={item.product}
                       variant="rounded"
                       sx={{ width: 56, height: 56 }}
@@ -345,8 +391,8 @@ const EditOrderPage = () => {
                   </TableCell>
                   <TableCell>EGP {item.TotalLine.toFixed(2)}</TableCell>
                   <TableCell>
-                    <IconButton 
-                      color="error" 
+                    <IconButton
+                      color="error"
                       onClick={() => handleDeleteItem(index)}
                       disabled={order.items.length === 1}
                     >
@@ -393,6 +439,22 @@ const EditOrderPage = () => {
           Save Changes
         </Button>
       </Box>
+
+         <Snackbar
+              open={alert.open}
+              autoHideDuration={6000}
+              onClose={() => setAlert({ ...alert, open: false })}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+              <Alert
+                onClose={() => setAlert({ ...alert, open: false })}
+                severity={alert.severity}
+                variant="filled"
+                sx={{ width: '100%' }}
+              >
+                {alert.message}
+              </Alert>
+            </Snackbar>
     </Container>
   );
 };

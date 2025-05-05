@@ -31,14 +31,27 @@ const OrdersTable = ({
   onViewInvoice,
   onDelete,
 }) => {
+  // const STATUS_COLORS = {
+  //   pending: "warning",
+  //   processing: "info",
+  //   shipped: "primary",
+  //   delivered: "success",
+  //   completed: "success",
+  //   cancelled: "error",
+  //   on_hold: "default",
+  // };
+
+
   const STATUS_COLORS = {
-    pending: "warning",
-    processing: "info",
-    shipped: "primary",
-    delivered: "success",
-    completed: "success",
-    cancelled: "error",
-    on_hold: "default",
+    PENDING:  'warning' ,
+    ACCEPTED: 'info' ,
+    MANUFACTURING:  'primary',
+    PRINTING: 'primary' ,
+    PACKAGING:  'info' ,
+    DELIVERING:  'warning' ,
+    FINISHED: 'success' ,
+    CANCELLED: 'error' ,
+    on_hold:"default",
   };
 
   return (
@@ -68,7 +81,7 @@ const OrdersTable = ({
                   <Chip
                     label={order.status}
                     color={
-                      STATUS_COLORS[order.status.toLowerCase()] || "default"
+                      STATUS_COLORS[order.status.toUpperCase()] || "default"
                     }
                     size="small"
                   />

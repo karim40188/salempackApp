@@ -1,35 +1,70 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import theme from '../../Theme/theme';
 import LeftSidebar from '../../Components/Home/OrderStatsSidebar/OrderStatsSidebar';
 import TopStats from '../../Components/Home/TopStatsSection/TopStatsSection';
 import OrdersTable from '../../Components/Home/OrdersTable/OrdersTable';
 import NextTasksPanel from '../../Components/Home/NextTasks/NextTasks';
+import "./HomeStyle.css"
+import axios from 'axios';
+import { Context } from '../../context/AuthContext';
 
 const Home = () => {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '250px 1fr 380px',
-        gap: '20px',
-        backgroundColor: theme.colors.primary,
-        color: theme.colors.white,
-        fontFamily: theme.fonts.main,
-        borderRadius: '8px',
-        minHeight: '100vh',
-      }}
-    >
-      {/* 🟥 Left Sidebar */}
-      <LeftSidebar />
+  const { baseUrl, token} = useContext(Context);
+  const [months, setMonths] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(""); // ✅ جديد
 
-      {/* 🟧 Center Content (Top Stats + Orders Table) */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <TopStats />
-        <OrdersTable />
+  const getMonths = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/dashboard/statistics/getmonth`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setMonths(res?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getMonths();
+  }, []);
+
+  return (
+    <div>
+      <div style={{ flex: '1', marginLeft: '10px' }}>
+        <select
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="month-select"
+        >
+
+          <option value="">Select Month</option>
+          {months?.map((m) => (
+            <option key={m.month} value={m.month}>{m.month}</option>
+          ))}
+        </select>
       </div>
 
-      {/* 🟩 Right Panel */}
-      <NextTasksPanel />
+      <div
+        className='home-container'
+        style={{
+          backgroundColor: theme.colors.primary,
+          color: theme.colors.white,
+          fontFamily: theme.fonts.main,
+        }}
+      >
+        {/* 🟥 Left Sidebar */}
+        <LeftSidebar selectedMonth={selectedMonth} /> {/* ✅ تمرير الشهر */}
+
+        {/* 🟧 Center Content (Top Stats + Orders Table) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <TopStats selectedMonth={selectedMonth} />
+          <OrdersTable />
+        </div>
+
+        {/* 🟩 Right Panel */}
+        <NextTasksPanel />
+      </div>
     </div>
   );
 };

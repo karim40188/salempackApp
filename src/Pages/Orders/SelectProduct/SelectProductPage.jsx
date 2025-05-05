@@ -49,37 +49,75 @@ const SelectProductPage = () => {
   const [selected, setSelected] = useState({});
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, productId: null });
+  // Updated order types according to validation errors
+  const ORDER_TYPES = ["cup", "corrugated_box"];
+  const [orderType, setOrderType] = useState("cup"); // Default to 'cup'
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProducts();
+    // fetchProducts();
+    getClient();
     fetchCategories();
   }, [baseUrl, token]);
 
-  const fetchProducts = async () => {
-    setLoading(true);
+  // const fetchProducts = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const res = await axios.get(`${baseUrl}/dashboard/products`, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     console.log(res)
+
+  //     const enriched = (res.data || []).map((p) => ({
+  //       id: p.id,
+  //       name: p.productName,
+  //       specs: p.productDescription,
+  //       image: `${baseUrl}/public/uploads/${p.productPhoto}`,
+  //       quantity: 1,
+  //       price: p.productPrice,
+  //       categoryId: p.productCategory,
+  //       photo: p.productPhoto
+  //     }));
+  //     setProducts(enriched);
+  //   } catch (err) {
+  //     console.error("Failed to fetch products:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  const getClient = async () => {
+    setLoading(true); // إضافة للتأكد إن الـ loading بيشتغل
+    const clientId = localStorage.getItem("selectedClientId");
     try {
-      const res = await axios.get(`${baseUrl}/dashboard/products`, {
+      const res = await axios.get(`${baseUrl}/dashboard/clients/${clientId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      const enriched = (res.data || []).map((p) => ({
-        id: p.id,
-        name: p.productName,
-        specs: p.productDescription,
-        image: `${baseUrl}/public/uploads/${p.productPhoto}`,
-        quantity: 1,
-        price: p.productPrice,
-        categoryId: p.productCategory,
-        photo: p.productPhoto
+      console.log(res);
+  
+      // Map ClientProducts to the expected product structure
+      const enrichedProducts = res.data.ClientProducts.map((clientProduct, index) => ({
+        id: clientProduct.Products.id || index + 1, // لو مفيش id في Products، استخدم index كبديل مؤقت
+        name: clientProduct.Products.productName,
+        specs: clientProduct.Products.productDescription || "No description", // لو مفيش وصف
+        image: `${baseUrl}/public/uploads/${clientProduct.Products.productPhoto}`,
+        quantity: clientProduct.MinimumQuantity || 1, // استخدام MinimumQuantity كـ default quantity
+        price: clientProduct.Price,
+        categoryId: clientProduct.Products.productCategory || null, // لو فيه فئة
+        photo: clientProduct.Products.productPhoto
       }));
-      setProducts(enriched);
+  
+      setProducts(enrichedProducts);
+      setDeleteDialog({ open: false, productId: null });
     } catch (err) {
-      console.error("Failed to fetch products:", err);
+      console.error("Failed to fetch client products:", err);
     } finally {
-      setLoading(false);
+      setLoading(false); // إيقاف الـ loading بعد ما الداتا تتحمل
     }
   };
+
+
 
   const fetchCategories = async () => {
     try {
@@ -116,7 +154,7 @@ const SelectProductPage = () => {
       await axios.delete(`${baseUrl}/dashboard/products?id=${deleteDialog.productId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchProducts(); // Refresh list
+      // fetchProducts(); // Refresh list
       setDeleteDialog({ open: false, productId: null });
     } catch (err) {
       console.error(err);
@@ -149,9 +187,12 @@ const SelectProductPage = () => {
       return;
     }
 
+  
+
     const items = products
       .filter((p) => selected[p.id])
       .map((p) => ({
+        productid: p.id, // Add the productid field required by the backend
         product: p.name,
         Price: p.price,
         Quantity: p.quantity,
@@ -165,11 +206,12 @@ const SelectProductPage = () => {
     const orderData = {
       clientId: Number(clientId),
       total: Number(totalAmount.toFixed(2)),
-      status: "Pending",
+      type: orderType, // Include the type field - required by backend
       items
     };
 
     try {
+      console.log("Sending order data:", orderData);
       await axios.post(`${baseUrl}/dashboard/orders`, orderData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -179,6 +221,7 @@ const SelectProductPage = () => {
       navigate("/orders");
     } catch (error) {
       console.error("Order creation failed:", error);
+      console.error("Error response:", error.response?.data);
     }
   };
 
@@ -247,13 +290,13 @@ const SelectProductPage = () => {
                 const category = getCategoryById(product.categoryId);
                 return (
                   <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
-                    <Card 
+                    <Card
                       elevation={2}
-                      sx={{ 
-                        height: '100%', 
-                        display: 'flex', 
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
                         flexDirection: 'column',
-                        width:'280px',
+                        width: '280px',
                         borderRadius: 2,
                         position: 'relative',
                         bgcolor: selected[product.id] ? 'success.50' : 'background.paper',
@@ -302,7 +345,7 @@ const SelectProductPage = () => {
                         <Typography variant="subtitle2" fontWeight="bold" color="text.primary">
                           EGP{product.price.toFixed(2)}
                         </Typography>
-                        
+
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                           <Typography variant="body2" sx={{ mr: 1 }}>Qty:</Typography>
                           <TextField
@@ -354,13 +397,35 @@ const SelectProductPage = () => {
       </Paper>
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mt: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Selected Products: <strong>{selectedProductCount}</strong>
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 3 }}>
-            Total Order Price: <strong>EGP{totalAmount.toFixed(2)}</strong>
-          </Typography>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <FormControl variant="outlined" sx={{ mb: { xs: 2, sm: 0 }, minWidth: 200 }}>
+            <InputLabel id="order-type-label">Order Type</InputLabel>
+            <Select
+              labelId="order-type-label"
+              id="order-type"
+              value={orderType}
+              label="Order Type"
+              onChange={(e) => setOrderType(e.target.value)}
+            >
+              {ORDER_TYPES.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type === "cup" ? "Cup" : "Corrugated Box"}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Selected Products: <strong>{selectedProductCount}</strong>
+            </Typography>
+            <Typography variant="h6">
+              Total Order Price: <strong>EGP{totalAmount.toFixed(2)}</strong>
+            </Typography>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             variant="contained"
             color="success"
