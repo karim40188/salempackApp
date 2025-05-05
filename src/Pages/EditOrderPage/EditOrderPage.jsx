@@ -41,12 +41,11 @@ const EditOrderPage = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
-    const [alert, setAlert] = useState({
-      open: false,
-      message: '',
-      severity: 'success'
-    });
-  // const [success, setSuccess] = useState(false);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   // Fetch order details
   const fetchOrder = async () => {
@@ -55,49 +54,67 @@ const EditOrderPage = () => {
       const { data } = await axios.get(`${baseUrl}/dashboard/orders/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(data)
+      console.log("Order data:", data);
       setOrder(data);
+      
+      // Only fetch products after we have the order data with clientId
+      if (data && data.clientId) {
+        fetchProducts(data.clientId);
+      }
+      
       setError(null);
-
-  
     } catch (err) {
       console.error("Error fetching order:", err);
-      // setError("Failed to load order details. Please try again.");
+      setError("Failed to load order details. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch available products
-  const fetchProducts = async () => {
+  // Fetch available products - Now with clientId parameter
+  const fetchProducts = async (clientId) => {
     try {
-      const { data } = await axios.get(`${baseUrl}/dashboard/clients/${order.clientId}`, {
+      const { data } = await axios.get(`${baseUrl}/dashboard/clients/${clientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
-      setProducts(data.ClientProducts || []);
+      
+      console.log("Client products:", data.items);
+      setProducts(data.items || []);
     } catch (err) {
       console.error("Error fetching client's products:", err);
     }
   };
-  
 
   useEffect(() => {
     fetchOrder();
-    fetchProducts();
+    // fetchProducts() will be called inside fetchOrder after we have clientId
   }, [id, baseUrl, token]);
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...order.items];
+    
     if (field === 'product') {
+      // Find the selected product by name
       const selectedProduct = products.find(p => p.productName === value);
       if (selectedProduct) {
-        updatedItems[index].Price = selectedProduct.productPrice;
-        updatedItems[index].productImage = selectedProduct.productImage;
+        // Update the item with product details
+        updatedItems[index] = {
+          ...updatedItems[index],
+          product: value,
+          productid: selectedProduct.id, // Store the product ID
+          Price: selectedProduct.productPrice,
+          productImage: selectedProduct.productImage
+        };
       }
+    } else {
+      // Update other fields
+      updatedItems[index][field] = value;
     }
-    updatedItems[index][field] = value;
+    
+    // Recalculate the total line amount
     updatedItems[index].TotalLine = updatedItems[index].Price * updatedItems[index].Quantity;
+    
+    // Update the order with new items and total
     updateOrderTotal(updatedItems);
   };
 
@@ -108,7 +125,11 @@ const EditOrderPage = () => {
 
   const handleDeleteItem = (index) => {
     if (order.items.length === 1) {
-      // setError("Order must have at least one item");
+      setAlert({
+        open: true,
+        message: "Order must have at least one item",
+        severity: "error"
+      });
       return;
     }
 
@@ -117,10 +138,18 @@ const EditOrderPage = () => {
   };
 
   const handleAddItem = () => {
-    if (products.length === 0) return;
+    if (products.length === 0) {
+      setAlert({
+        open: true,
+        message: "No products available to add",
+        severity: "warning"
+      });
+      return;
+    }
 
     const defaultProduct = products[0];
     const newItem = {
+      productid: defaultProduct.id,
       product: defaultProduct.productName,
       productImage: defaultProduct.productImage,
       Price: defaultProduct.productPrice,
@@ -131,6 +160,7 @@ const EditOrderPage = () => {
     const updatedItems = [...order.items, newItem];
     updateOrderTotal(updatedItems);
   };
+  
   const handleUpdate = async () => {
     setUpdating(true);
     try {
@@ -140,16 +170,20 @@ const EditOrderPage = () => {
         type: order.type || "cup",
         status: order.status,
         items: order.items.map(item => ({
-          productid: getProductIdFromName(item.product), // Add this function to get productid
+          productid: item.productid, // Use the stored productid
           product: item.product,
           Price: item.Price,
           Quantity: item.Quantity,
           TotalLine: item.TotalLine,
         })),
       };
+      
+      console.log("Updating order with:", updatedOrder);
+      
       await axios.patch(`${baseUrl}/dashboard/orders/${id}`, updatedOrder, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
       setAlert({
         open: true,
         message: "Order updated successfully",
@@ -170,13 +204,9 @@ const EditOrderPage = () => {
     }
   };
 
-  const getProductIdFromName = (productName) => {
-    const product = products.find(p => p.productName === productName);
-    return product?.id || null; // Return the product ID or null if not found
-  };
-  
   const getStatusChip = (status) => {
-    const statusKey = status.toUpperCase().replace(' ', '_');
+    // Convert status string to match our status keys
+    const statusKey = status.toUpperCase();
     const statusInfo = ORDER_STATUSES[statusKey] || { label: status, color: 'default' };
 
     return (
@@ -187,11 +217,6 @@ const EditOrderPage = () => {
         sx={{ fontWeight: 'medium', minWidth: '90px', borderRadius: '4px' }}
       />
     );
-  };
-
-  const getProductImage = (productName) => {
-    const product = products.find(p => p.productName === productName);
-    return product?.productImage || '/placeholder.png';
   };
 
   if (loading || !order) {
@@ -218,9 +243,6 @@ const EditOrderPage = () => {
         </Link>
         <Typography color="text.primary">Edit Order #{order.code}</Typography>
       </Breadcrumbs>
-
-      {/* {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 3 }}>Order updated successfully!</Alert>} */}
 
       {/* Order Details */}
       <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden', mb: 4 }}>
@@ -343,25 +365,28 @@ const EditOrderPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {order.items.map((item, index) => (
+              {order?.items?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell sx={{ minWidth: '200px' }}>
                     <Select
-                      value={item.product}
+                      value={item.product || ""}
                       fullWidth
                       onChange={(e) => handleItemChange(index, 'product', e.target.value)}
                       size="small"
                     >
                       {products.map((product) => (
-                        <MenuItem key={product.productName} value={product.productName}>
+                        <MenuItem key={product.id} value={product.productName}>
+{console.log(product)}
+
                           {product.productName}
+                        
                         </MenuItem>
                       ))}
                     </Select>
                   </TableCell>
                   <TableCell>
                     <Avatar
-                      src={item.productImage || getProductImage(item.product)}
+                      src={item.productImage || "/placeholder.png"}
                       alt={item.product}
                       variant="rounded"
                       sx={{ width: 56, height: 56 }}
@@ -440,21 +465,21 @@ const EditOrderPage = () => {
         </Button>
       </Box>
 
-         <Snackbar
-              open={alert.open}
-              autoHideDuration={6000}
-              onClose={() => setAlert({ ...alert, open: false })}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-              <Alert
-                onClose={() => setAlert({ ...alert, open: false })}
-                severity={alert.severity}
-                variant="filled"
-                sx={{ width: '100%' }}
-              >
-                {alert.message}
-              </Alert>
-            </Snackbar>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={6000}
+        onClose={() => setAlert({ ...alert, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setAlert({ ...alert, open: false })}
+          severity={alert.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

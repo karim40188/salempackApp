@@ -62,4 +62,16 @@
     float: right;
     margin-top: 30px;
   }
+  .toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 35%;
+    transform: translateY(-50%);
+    background-color: red;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+  }
+  
   

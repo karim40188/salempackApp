@@ -229,6 +229,7 @@ const Admins = () => {
         deleting={deleting}
         onClose={() => setOpenDeleteConfirm(false)}
         onDelete={deleteAdmin}
+        message={"Are you sure you want to delete this admin?"}
       />
     </Box>
   );

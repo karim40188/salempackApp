@@ -20,6 +20,7 @@ const TopStats = ({ selectedMonth}) => {
       });
   
       setStats(res?.data);
+      console.log(res?.data)
     } catch (err) {
       console.log(err);
     }

@@ -189,6 +189,7 @@ const Orders = () => {
         deleting={deleting}
         onClose={() => setOpenDeleteConfirm(false)}
         onDelete={deleteOrder}
+        message={"Are you sure you want to delete this order?"}
       />
     </Box>
   );

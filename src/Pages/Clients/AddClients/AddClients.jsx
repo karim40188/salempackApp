@@ -2,21 +2,30 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import './AddClientsStyle.css';
 import { Context } from '../../../context/AuthContext';
-import useImageUploader from '../../../hooks/useImageUploader'; // assuming this is your custom hook
+import useImageUploader from '../../../hooks/useImageUploader';
 import { useNavigate } from 'react-router-dom';
+import { Alert, Snackbar } from '@mui/material';
 
 const AddClientPage = () => {
   const { baseUrl, token } = useContext(Context);
   const uploadImage = useImageUploader(baseUrl, token);
   const [products, setProducts] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     companyName: '',
     employeeName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    mobileNumber: '',  // Added mobile number field
+    mobileNumber: '',
     logo: null,
     selectedProducts: [],
   });
@@ -28,9 +37,9 @@ const AddClientPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProducts(res.data);
+        console.log(res?.data);
       } catch (err) {
-        // console.error('Failed to load products:', err);
-        console.log(err)
+        console.log(err);
       }
     };
     fetchProducts();
@@ -44,6 +53,9 @@ const AddClientPage = () => {
   const handleLogoChange = (e) => {
     setFormData((prev) => ({ ...prev, logo: e.target.files[0] }));
   };
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   const handleProductSelect = (e) => {
     const selectedId = parseInt(e.target.value);
@@ -54,7 +66,13 @@ const AddClientPage = () => {
     ) {
       setFormData((prev) => ({
         ...prev,
-        selectedProducts: [...prev.selectedProducts, selectedProduct],
+        selectedProducts: [
+          ...prev.selectedProducts,
+          {
+            ...selectedProduct,
+            MinimumQuantity: 1,
+          },
+        ],
       }));
     }
   };
@@ -78,38 +96,53 @@ const AddClientPage = () => {
       selectedProducts,
     } = formData;
 
-    // Validate required fields
     if (!companyName || !employeeName || !email || !password || password !== confirmPassword || !logo || selectedProducts.length === 0) {
-      alert('Please fill all fields and select at least one product.');
+
+      setSnackbar({
+        open: true,
+        message: 'Please fill all fields and select at least one product.',
+        severity: 'error'
+      });
+      return;
+    }
+    console.log(formData)
+
+    if (mobileNumber.length !== 11 || !/^\d+$/.test(mobileNumber)) {
+      setSnackbar({
+        open: true,
+        message: 'Mobile number must be exactly 11 digits.',
+        severity: 'error'
+      });
       return;
     }
 
+
     try {
-      // Upload logo using the custom hook
       const logoPath = await uploadImage(logo);
-      
       if (!logoPath) {
-        alert('Failed to upload logo image. Please try again.');
+
+        setSnackbar({
+          open: true,
+          message: 'Failed to upload logo image. Please try again.',
+          severity: 'error'
+        });
         return;
       }
-      
-      // Extract just the filename from the path if needed
-      // Sometimes the API returns a full path, but we might only need the filename
+
       const logoFilename = logoPath.split('/').pop();
-      
-      // Updated payload structure to match new API requirements
+
       const payload = {
         username: employeeName,
         CompanyName: companyName,
-        MobileNumber: mobileNumber || '00000000000', // Use entered mobile number or default
-        Logo: logoFilename, // Make sure this is just the filename string
+        MobileNumber: mobileNumber || '00000000000',
+        Logo: logoFilename,
         Email: email,
         Password: password,
         products: selectedProducts.map((product) => ({
-          productid: product.id,  // Include productid as required by the updated API
+          productid: product.id,
           product: product.productName,
           Price: product.productPrice,
-          MinimumQuantity: 1, // default if required by backend
+          MinimumQuantity: product.MinimumQuantity,
         })),
       };
 
@@ -117,13 +150,20 @@ const AddClientPage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert('Client created successfully!');
-      navigate("/clients")
+      setSnackbar({
+        open: true,
+        message: 'Client created successfully!',
+        severity: 'success'
+      });
+      navigate("/clients");
       console.log(res.data);
     } catch (err) {
-      // console.error('Failed to create client:', err);
-      console.log(err)
-      alert('Error creating client.');
+      console.log(err);
+      setSnackbar({
+        open: true,
+        message: 'Error creating client.',
+        severity: 'error'
+      });
     }
   };
 
@@ -183,22 +223,42 @@ const AddClientPage = () => {
             value={formData.email}
             onChange={handleInputChange}
           />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            className="input-style"
-            value={formData.password}
-            onChange={handleInputChange}
-          />
-          <input
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm Password"
-            className="input-style"
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              className="input-style"
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="toggle-password-btn"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <input
+              name="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Confirm Password"
+              className="input-style"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="toggle-password-btn"
+            >
+              {showConfirmPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -209,6 +269,21 @@ const AddClientPage = () => {
             <div style={{ fontSize: '12px', marginTop: '5px' }}>
               {product.productName}<br />Price: ${product.productPrice}
             </div>
+            <input
+              type="number"
+              min="1"
+              value={product.MinimumQuantity}
+              onChange={(e) => {
+                const newQuantity = parseInt(e.target.value);
+                setFormData((prev) => ({
+                  ...prev,
+                  selectedProducts: prev.selectedProducts.map((p) =>
+                    p.id === product.id ? { ...p, MinimumQuantity: newQuantity } : p
+                  ),
+                }));
+              }}
+              style={{ width: '60px', marginTop: '5px' }}
+            />
             <button onClick={() => handleRemoveProduct(product.id)} className="remove-btn">
               Remove
             </button>
@@ -217,6 +292,21 @@ const AddClientPage = () => {
       </div>
 
       <button onClick={handleSave} className="save-button">Save</button>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

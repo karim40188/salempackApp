@@ -168,6 +168,7 @@ const CategoriesPage = () => {
         deleting={deleting}
         onClose={handleCloseDeleteDialog}
         onDelete={handleConfirmDelete}
+        message={"Are you sure you want to delete this category?"}
       />
     </div>
   );

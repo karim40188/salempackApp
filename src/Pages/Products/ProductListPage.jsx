@@ -388,6 +388,7 @@ const ProductListPage = () => {
         deleting={deleting}
         onClose={closeDeleteDialog}
         onDelete={confirmDelete}
+        message={"Are you sure you want to delete this product?"}
       />
     </Box>
   );

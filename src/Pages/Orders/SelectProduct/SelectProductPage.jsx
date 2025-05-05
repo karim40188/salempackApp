@@ -100,11 +100,11 @@ const SelectProductPage = () => {
       const enrichedProducts = res.data.ClientProducts.map((clientProduct, index) => ({
         id: clientProduct.Products.id || index + 1, // لو مفيش id في Products، استخدم index كبديل مؤقت
         name: clientProduct.Products.productName,
-        specs: clientProduct.Products.productDescription || "No description", // لو مفيش وصف
+        // specs: clientProduct.Products.productDescription || "No description", // لو مفيش وصف
         image: `${baseUrl}/public/uploads/${clientProduct.Products.productPhoto}`,
         quantity: clientProduct.MinimumQuantity || 1, // استخدام MinimumQuantity كـ default quantity
         price: clientProduct.Price,
-        categoryId: clientProduct.Products.productCategory || null, // لو فيه فئة
+        categoryId: clientProduct.Products.category.id || null, // لو فيه فئة
         photo: clientProduct.Products.productPhoto
       }));
   
@@ -336,12 +336,12 @@ const SelectProductPage = () => {
                         sx={{ objectFit: 'contain', pt: 2, pb: 1 }}
                       />
                       <CardContent sx={{ flexGrow: 1, pt: 1 }}>
-                        <Typography variant="subtitle1" component="div" fontWeight="bold" noWrap>
+                        <Typography sx={{mb:"10px"}} variant="subtitle1" component="div" fontWeight="bold" noWrap>
                           {product.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ height: 40, overflow: 'hidden', mb: 1 }}>
+                        {/* <Typography variant="body2" color="text.secondary" sx={{ height: 40, overflow: 'hidden', mb: 1 }}>
                           {product.specs}
-                        </Typography>
+                        </Typography> */}
                         <Typography variant="subtitle2" fontWeight="bold" color="text.primary">
                           EGP{product.price.toFixed(2)}
                         </Typography>
