@@ -19,7 +19,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import html2pdf from "html2pdf.js";
-import logoImg from "../../assets/Header/WhiteLogoSalemPack.png"
+import logoImg from "../../assets/Login/SalemPackMainLogo.png"
 const InvoiceDialog = ({ open, order, formatDate, onClose }) => {
   const [downloading, setDownloading] = useState(false);
   const invoiceRef = useRef();
@@ -32,7 +32,7 @@ const InvoiceDialog = ({ open, order, formatDate, onClose }) => {
     const invoiceHTML = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src=${logoImg} alt="Salempack Logo" style="width: 100px;backgroundColor:'black' " />
+          <img src=${logoImg} alt="Salempack Logo" style="width: 100px " />
           <h2 style="margin: 10px 0;">Salempack</h2>
           <h3 style="margin: 0;">Invoice</h3>
         </div>
@@ -64,7 +64,7 @@ const InvoiceDialog = ({ open, order, formatDate, onClose }) => {
       <DialogTitle>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h6">Salempack</Typography>
-          <img src={logoImg} alt="Salempack Logo" style={{ width: "100px",backgroundColor:'black' }} />
+          <img src={logoImg} alt="Salempack Logo" style={{ width: "100px"}} />
         </Box>
       </DialogTitle>
       <DialogContent>
@@ -77,7 +77,7 @@ const InvoiceDialog = ({ open, order, formatDate, onClose }) => {
             <img
               src={logoImg}
               alt="Salempack Logo"
-              style={{ width: "100px" ,backgroundColor:"black"}}
+              style={{ width: "100px"}}
             />
           </Box>
           <Typography variant="h5" gutterBottom>

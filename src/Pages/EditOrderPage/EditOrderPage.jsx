@@ -57,8 +57,8 @@ const EditOrderPage = () => {
       console.log("Order data:", data);
       setOrder(data);
       
-      // Only fetch products after we have the order data with clientId
-      if (data && data.clientId) {
+      // Fetch products for this client
+      if (data?.clientId) {
         fetchProducts(data.clientId);
       }
       
@@ -71,50 +71,52 @@ const EditOrderPage = () => {
     }
   };
 
-  // Fetch available products - Now with clientId parameter
+  // Fetch available products
   const fetchProducts = async (clientId) => {
+    if (!clientId) return;
+    
     try {
-      const { data } = await axios.get(`${baseUrl}/dashboard/clients/${clientId}`, {
+      const res = await axios.get(`${baseUrl}/dashboard/clients/${clientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Client products:", res.data);
       
-      console.log("Client products:", data.items);
-      setProducts(data.items || []);
+      // Check if ClientProducts exists in the response
+      if (res.data?.ClientProducts?.length > 0) {
+        // Transform the data to match our requirements
+        const clientProducts = res.data.ClientProducts.map(item => ({
+          id: item.Products.id,
+          productName: item.Products.productName,
+          productPrice: item.Price,
+          productImage: item.Products.productPhoto || '',
+          MinimumQuantity: item.MinimumQuantity
+        }));
+        setProducts(clientProducts);
+      } else {
+        setProducts([]);
+      }
     } catch (err) {
       console.error("Error fetching client's products:", err);
+      setProducts([]);
     }
   };
 
   useEffect(() => {
     fetchOrder();
-    // fetchProducts() will be called inside fetchOrder after we have clientId
   }, [id, baseUrl, token]);
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...order.items];
-    
     if (field === 'product') {
-      // Find the selected product by name
       const selectedProduct = products.find(p => p.productName === value);
       if (selectedProduct) {
-        // Update the item with product details
-        updatedItems[index] = {
-          ...updatedItems[index],
-          product: value,
-          productid: selectedProduct.id, // Store the product ID
-          Price: selectedProduct.productPrice,
-          productImage: selectedProduct.productImage
-        };
+        updatedItems[index].Price = selectedProduct.productPrice;
+        updatedItems[index].productImage = selectedProduct.productImage;
+        updatedItems[index].productId = selectedProduct.id; // Store the product ID
       }
-    } else {
-      // Update other fields
-      updatedItems[index][field] = value;
     }
-    
-    // Recalculate the total line amount
+    updatedItems[index][field] = value;
     updatedItems[index].TotalLine = updatedItems[index].Price * updatedItems[index].Quantity;
-    
-    // Update the order with new items and total
     updateOrderTotal(updatedItems);
   };
 
@@ -128,7 +130,7 @@ const EditOrderPage = () => {
       setAlert({
         open: true,
         message: "Order must have at least one item",
-        severity: "error"
+        severity: "warning"
       });
       return;
     }
@@ -141,7 +143,7 @@ const EditOrderPage = () => {
     if (products.length === 0) {
       setAlert({
         open: true,
-        message: "No products available to add",
+        message: "No products available for this client",
         severity: "warning"
       });
       return;
@@ -149,8 +151,8 @@ const EditOrderPage = () => {
 
     const defaultProduct = products[0];
     const newItem = {
-      productid: defaultProduct.id,
       product: defaultProduct.productName,
+      productId: defaultProduct.id, // Store product ID
       productImage: defaultProduct.productImage,
       Price: defaultProduct.productPrice,
       Quantity: 1,
@@ -160,25 +162,44 @@ const EditOrderPage = () => {
     const updatedItems = [...order.items, newItem];
     updateOrderTotal(updatedItems);
   };
-  
+
   const handleUpdate = async () => {
     setUpdating(true);
     try {
+      // Make sure we have valid product IDs
+      const validItems = order.items.map(item => {
+        // If the item already has a productId, use it
+        let productId = item.productId;
+        
+        // If not, try to find it
+        if (!productId) {
+          const product = products.find(p => p.productName === item.product);
+          productId = product?.id;
+        }
+        
+        // Ensure productId is a valid number or null
+        if (productId === undefined || isNaN(Number(productId))) {
+          productId = null;
+        }
+        
+        return {
+          productid: productId, // Send null if no valid ID exists
+          product: item.product,
+          Price: item.Price,
+          Quantity: item.Quantity,
+          TotalLine: item.TotalLine,
+        };
+      });
+      
       const updatedOrder = {
         clientId: order.clientId,
         total: order.total,
         type: order.type || "cup",
         status: order.status,
-        items: order.items.map(item => ({
-          productid: item.productid, // Use the stored productid
-          product: item.product,
-          Price: item.Price,
-          Quantity: item.Quantity,
-          TotalLine: item.TotalLine,
-        })),
+        items: validItems,
       };
       
-      console.log("Updating order with:", updatedOrder);
+      console.log("Sending update with:", updatedOrder);
       
       await axios.patch(`${baseUrl}/dashboard/orders/${id}`, updatedOrder, {
         headers: { Authorization: `Bearer ${token}` },
@@ -192,21 +213,19 @@ const EditOrderPage = () => {
    
       setTimeout(() => navigate("/orders"), 1500);
     } catch (err) {
+      console.error("Error updating order:", err.response?.data || err);
       setAlert({
         open: true,
-        message: "Failed to edit order",
+        message: `Failed to edit order: ${err.response?.data?.message || err.message}`,
         severity: "error"
       });
-      console.error("Error updating order:", err);
-      setError("Failed to update order. Please try again.");
     } finally {
       setUpdating(false);
     }
   };
 
   const getStatusChip = (status) => {
-    // Convert status string to match our status keys
-    const statusKey = status.toUpperCase();
+    const statusKey = status.toUpperCase().replace(' ', '_');
     const statusInfo = ORDER_STATUSES[statusKey] || { label: status, color: 'default' };
 
     return (
@@ -217,6 +236,11 @@ const EditOrderPage = () => {
         sx={{ fontWeight: 'medium', minWidth: '90px', borderRadius: '4px' }}
       />
     );
+  };
+
+  const getProductImage = (productName) => {
+    const product = products.find(p => p.productName === productName);
+    return product?.productImage || '/placeholder.png';
   };
 
   if (loading || !order) {
@@ -244,6 +268,8 @@ const EditOrderPage = () => {
         <Typography color="text.primary">Edit Order #{order.code}</Typography>
       </Breadcrumbs>
 
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+
       {/* Order Details */}
       <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden', mb: 4 }}>
         <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e0e0e0', backgroundColor: '#f9f9f9' }}>
@@ -267,9 +293,9 @@ const EditOrderPage = () => {
                     <Grid item xs={12}>
                       <TextField label="Order Code" fullWidth value={order.code} InputProps={{ readOnly: true }} size="small" sx={{ mb: 2 }} />
                     </Grid>
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                       <TextField label="Client ID" fullWidth value={order.clientId} InputProps={{ readOnly: true }} size="small" sx={{ mb: 2 }} />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12}>
                       <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                         <InputLabel>Status</InputLabel>
@@ -322,9 +348,9 @@ const EditOrderPage = () => {
                           <TextField label="Email" fullWidth value={order.client.Email} InputProps={{ readOnly: true }} size="small" sx={{ mb: 2 }} />
                         </Grid>
                       )}
-                      {order.client.Phone && (
+                      {order.client.MobileNumber && (
                         <Grid item xs={12}>
-                          <TextField label="Phone" fullWidth value={order.client.Phone} InputProps={{ readOnly: true }} size="small" sx={{ mb: 2 }} />
+                          <TextField label="Phone" fullWidth value={order.client.MobileNumber} InputProps={{ readOnly: true }} size="small" sx={{ mb: 2 }} />
                         </Grid>
                       )}
                     </Grid>
@@ -365,28 +391,25 @@ const EditOrderPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {order?.items?.map((item, index) => (
+              {order.items.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell sx={{ minWidth: '200px' }}>
                     <Select
-                      value={item.product || ""}
+                      value={item.product}
                       fullWidth
                       onChange={(e) => handleItemChange(index, 'product', e.target.value)}
                       size="small"
                     >
                       {products.map((product) => (
                         <MenuItem key={product.id} value={product.productName}>
-{console.log(product)}
-
                           {product.productName}
-                        
                         </MenuItem>
                       ))}
                     </Select>
                   </TableCell>
                   <TableCell>
                     <Avatar
-                      src={item.productImage || "/placeholder.png"}
+                      src={item.productImage ? `${baseUrl}/public/uploads/${item.productImage}` : '/placeholder.png'}
                       alt={item.product}
                       variant="rounded"
                       sx={{ width: 56, height: 56 }}
