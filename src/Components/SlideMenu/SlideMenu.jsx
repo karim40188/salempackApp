@@ -48,7 +48,7 @@ const SlideMenu = ({ isOpen, onClose }) => {
         <a className="menu-item" href="/">
           <HomeIcon className="menu-icon" /> Home
         </a>
-        <a className="menu-item" href="/dashboard">
+        <a className="menu-item" href="/">
           <DashboardIcon className="menu-icon" /> Dashboard
         </a>
         

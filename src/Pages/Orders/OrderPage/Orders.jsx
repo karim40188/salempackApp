@@ -60,16 +60,41 @@ const Orders = () => {
 
   const handleReorder = async (orderId) => {
     try {
-      const res = await axios.post(
-        `${baseUrl}/dashboard/orders/reorder`,
-        { orderId },
+      // إظهار رسالة تحميل أو تعطيل الزر إذا لزم الأمر
+      setLoading(true);
+      
+      // إرسال طلب إعادة الطلب
+      const res = await axios.get(
+        `${baseUrl}/dashboard/orders/reorder/${orderId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      navigate(`/edit-order/${res.data.id}`);
+      
+      // التحقق من الاستجابة
+      if (res.data && res.data.id) {
+        // إضافة الأوردر الجديد للقائمة المحلية
+        setOrders(prevOrders => [res.data, ...prevOrders]);
+        
+        // الانتقال إلى صفحة تعديل الأوردر الجديد
+        // navigate(`/edit-order/${res.data.id}`);
+      } else {
+        // إذا كانت عملية إعادة الطلب ناجحة ولكن بدون بيانات كاملة
+        console.error("Reorder response missing ID:", res.data);
+        
+        // إعادة تحميل جميع الأوردرات لضمان تحديث القائمة
+        const refreshRes = await axios.get(`${baseUrl}/dashboard/orders/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOrders(refreshRes.data);
+        
+        setError("Successfully created order");
+      }
     } catch (err) {
-      setError("Failed to reorder. Please try again.");
+      console.error(err);
+      setError("Failed to create order");
+    } finally {
+      setLoading(false);
     }
   };
 

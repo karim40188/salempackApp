@@ -171,7 +171,7 @@ const AddClientPage = () => {
       <h2 className="add-client-title">Add Client</h2>
 
       <div className="form-sections">
-        <div style={{ flex: '1' }}>
+        <div className="form-column">
           <input
             name="companyName"
             type="text"
@@ -204,8 +204,12 @@ const AddClientPage = () => {
           />
         </div>
 
-        <div style={{ flex: '1', marginLeft: '10px' }}>
-          <select onChange={handleProductSelect} className="input-style" style={{ fontWeight: 'bold' }}>
+        <div className="form-column">
+          <select 
+            onChange={handleProductSelect} 
+            className="input-style" 
+            style={{ fontWeight: 'bold' }}
+          >
             <option value="">Select Products</option>
             {products.map((p) => (
               <option key={p.id} value={p.id}>{p.productName}</option>
@@ -213,7 +217,7 @@ const AddClientPage = () => {
           </select>
         </div>
 
-        <div style={{ flex: '1' }}>
+        <div className="form-column">
           <input
             name="email"
             type="email"
@@ -222,7 +226,7 @@ const AddClientPage = () => {
             value={formData.email}
             onChange={handleInputChange}
           />
-          <div style={{ position: 'relative' }}>
+          <div className="password-input-container">
             <input
               name="password"
               type={showPassword ? 'text' : 'password'}
@@ -240,7 +244,7 @@ const AddClientPage = () => {
             </button>
           </div>
 
-          <div style={{ position: 'relative' }}>
+          <div className="password-input-container">
             <input
               name="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
@@ -263,12 +267,13 @@ const AddClientPage = () => {
       <div className="selected-products">
         {formData.selectedProducts.map((product) => (
           <div key={product.id} className="product-card">
-            <img src={`${baseUrl}/public/uploads/${product.productPhoto}`} alt={product.productName} style={{ height: '80px', objectFit: 'contain' }} />
-            <div style={{ fontSize: '12px', marginTop: '5px' }}>
-              {product.productName}
-            </div>
+            <img 
+              src={`${baseUrl}/public/uploads/${product.productPhoto}`} 
+              alt={product.productName} 
+              className="product-image"
+            />
+            <div className="product-name">{product.productName}</div>
             
-            {/* Price Field */}
             <div className="product-field">
               <label>Price (EGP):</label>
               <input
@@ -285,12 +290,10 @@ const AddClientPage = () => {
                     ),
                   }));
                 }}
-                style={{ width: '70px' }}
-                className="product-input"
+                className="product-input price-input"
               />
             </div>
             
-            {/* Quantity Field */}
             <div className="product-field">
               <label>Min. Quantity:</label>
               <input
@@ -306,12 +309,14 @@ const AddClientPage = () => {
                     ),
                   }));
                 }}
-                style={{ width: '60px' }}
-                className="product-input"
+                className="product-input quantity-input"
               />
             </div>
             
-            <button onClick={() => handleRemoveProduct(product.id)} className="remove-btn">
+            <button 
+              onClick={() => handleRemoveProduct(product.id)} 
+              className="remove-btn"
+            >
               Remove
             </button>
           </div>

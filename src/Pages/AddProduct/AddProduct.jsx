@@ -170,18 +170,29 @@ const AddProduct = () => {
   }, []);
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ mt: 4, mb: 4, borderRadius: 2, overflow: 'hidden' }}>
+    <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3 } }}>
+      <Paper elevation={3} sx={{ 
+        mt: { xs: 2, sm: 4 }, 
+        mb: { xs: 2, sm: 4 }, 
+        borderRadius: 2, 
+        overflow: 'hidden' 
+      }}>
         {/* Header */}
         <Box sx={{
           bgcolor: 'primary.main',
           color: 'white',
-          p: 2,
+          p: { xs: 1.5, sm: 2 },
           display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 },
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            width: { xs: '100%', sm: 'auto' }
+          }}>
             <IconButton
               color="inherit"
               onClick={() => navigate('/')}
@@ -189,7 +200,9 @@ const AddProduct = () => {
             >
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" component="h1">
+            <Typography variant="h5" component="h1" sx={{ 
+              fontSize: { xs: '1.2rem', sm: '1.5rem' }
+            }}>
               Add New Product
             </Typography>
           </Box>
@@ -199,13 +212,18 @@ const AddProduct = () => {
             startIcon={<SaveIcon />}
             onClick={handleSubmit}
             disabled={loading}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             {loading ? 'Saving...' : 'Save Product'}
           </Button>
         </Box>
 
         {/* Breadcrumbs */}
-        <Box sx={{ p: 2, bgcolor: '#f5f5f5' }}>
+        <Box sx={{ 
+          p: { xs: 1.5, sm: 2 }, 
+          bgcolor: '#f5f5f5',
+          display: { xs: 'none', sm: 'block' }
+        }}>
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               underline="hover"
@@ -234,11 +252,14 @@ const AddProduct = () => {
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Box p={3}>
-            <Grid container spacing={4}>
+          <Box p={{ xs: 2, sm: 3 }}>
+            <Grid container spacing={{ xs: 2, sm: 4 }}>
               {/* Left side - Image upload */}
               <Grid item xs={12} md={4}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'medium' }}>
+                <Typography variant="h6" gutterBottom sx={{ 
+                  fontWeight: 'medium',
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                }}>
                   Product Image
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
@@ -249,16 +270,21 @@ const AddProduct = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     backgroundColor: '#f9f9f9',
-                    p: 2
+                    p: { xs: 1.5, sm: 2 }
                   }}>
                     {previewUrl ? (
-                      <Box sx={{ position: 'relative', width: '100%', mb: 2 }}>
+                      <Box sx={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        mb: 2,
+                        height: { xs: 150, sm: 200 }
+                      }}>
                         <CardMedia
                           component="img"
                           image={previewUrl}
                           alt="Product Preview"
                           sx={{
-                            height: 200,
+                            height: '100%',
                             borderRadius: 1,
                             objectFit: 'contain',
                             backgroundColor: '#fff',
@@ -286,7 +312,7 @@ const AddProduct = () => {
                       <Box
                         sx={{
                           width: '100%',
-                          height: 200,
+                          height: { xs: 150, sm: 200 },
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -295,10 +321,11 @@ const AddProduct = () => {
                           mb: 2
                         }}
                       >
-                        <CameraAltIcon sx={{ fontSize: 60, color: '#bdbdbd' }} />
+                        <CameraAltIcon sx={{ fontSize: { xs: 40, sm: 60 }, 
+                          color: '#bdbdbd' 
+                        }} />
                       </Box>
                     )}
-
                     <Button
                       variant="contained"
                       component="label"
@@ -323,12 +350,15 @@ const AddProduct = () => {
 
               {/* Right side - Form fields */}
               <Grid item xs={12} md={8}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'medium' }}>
+                <Typography variant="h6" gutterBottom sx={{ 
+                  fontWeight: 'medium',
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                }}>
                   Product Details
                 </Typography>
-                <Divider sx={{ mb: 3 }} />
+                <Divider sx={{ mb: { xs: 2, sm: 3 } }} />
 
-                <Grid container spacing={4}>
+                <Grid container spacing={{ xs: 2, sm: 4 }}>
                   <Grid item xs={12}>
                     <TextField
                       label="Product Title"
@@ -397,11 +427,18 @@ const AddProduct = () => {
               </Grid>
             </Grid>
 
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ 
+              mt: { xs: 3, sm: 4 }, 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: { xs: 2, sm: 0 },
+              justifyContent: 'space-between'
+            }}>
               <Button
                 variant="outlined"
                 startIcon={<ArrowBackIcon />}
                 onClick={() => navigate('/products')}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
               >
                 Cancel
               </Button>
@@ -412,6 +449,7 @@ const AddProduct = () => {
                 color="primary"
                 startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
                 disabled={loading}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
               >
                 {loading ? 'Saving...' : 'Save Product'}
               </Button>

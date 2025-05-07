@@ -270,21 +270,28 @@ const EditClient = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper elevation={3} sx={{ mt: 4, mb: 4, borderRadius: 2, overflow: 'hidden' }}>
+      <Paper elevation={3} sx={{ 
+        mt: { xs: 2, sm: 4 }, 
+        mb: { xs: 2, sm: 4 }, 
+        borderRadius: 2, 
+        overflow: 'hidden' 
+      }}>
         {/* Header */}
         <Box sx={{ 
           bgcolor: 'primary.main', 
           color: 'white', 
-          p: 2, 
+          p: { xs: 1, sm: 2 }, 
           display: 'flex', 
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 }
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton color="inherit" onClick={() => navigate('/clients')} sx={{ mr: 1 }}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" component="h1">
+            <Typography variant="h5" component="h1" sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
               Edit Client
             </Typography>
           </Box>
@@ -294,17 +301,22 @@ const EditClient = () => {
             startIcon={<SaveIcon />}
             onClick={handleSubmit}
             disabled={saving}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Box p={3}>
+          <Box p={{ xs: 2, sm: 3 }}>
             {/* Client Logo Section */}
-            <Card sx={{ mb: 4, bgcolor: '#f5f5f5', borderRadius: 2 }}>
+            <Card sx={{ 
+              mb: { xs: 2, sm: 4 }, 
+              bgcolor: '#f5f5f5', 
+              borderRadius: 2 
+            }}>
               <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                   Company Logo
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
@@ -312,14 +324,20 @@ const EditClient = () => {
                     src={previewLogo || (clientData.Logo ? `${baseUrl}/public/uploads/${clientData.Logo}` : '')}
                     alt={clientData.CompanyName}
                     sx={{ 
-                      width: 120, 
-                      height: 120, 
+                      width: { xs: 80, sm: 120 }, 
+                      height: { xs: 80, sm: 120 }, 
                       border: '2px solid #e0e0e0',
                       boxShadow: 2
                     }}
                   />
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: 2,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  '& > button': { width: { xs: '100%', sm: 'auto' } }
+                }}>
                   <Button
                     variant="outlined"
                     startIcon={<PhotoCameraIcon />}
@@ -342,12 +360,16 @@ const EditClient = () => {
               </CardContent>
             </Card>
 
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'medium' }}>
+            <Typography variant="h6" sx={{ 
+              mb: 2, 
+              fontWeight: 'medium',
+              fontSize: { xs: '1rem', sm: '1.25rem' }
+            }}>
               Client Information
             </Typography>
             <Divider sx={{ mb: 3 }} />
 
-            <Grid container spacing={3}>
+            <Grid container spacing={{ xs: 2, sm: 3 }}>
               <Grid item xs={12} md={6}>
                 <TextField
                   label="Username"
@@ -412,9 +434,19 @@ const EditClient = () => {
             </Grid>
 
             {/* Products Section */}
-            <Box sx={{ mt: 4 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+            <Box sx={{ mt: { xs: 3, sm: 4 } }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                mb: 2,
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: { xs: 1, sm: 0 }
+              }}>
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 'medium',
+                  fontSize: { xs: '1rem', sm: '1.25rem' }
+                }}>
                   Client Products
                 </Typography>
                 <Button
@@ -422,6 +454,7 @@ const EditClient = () => {
                   color="primary"
                   startIcon={<AddCircleIcon />}
                   onClick={() => setProductDialogOpen(true)}
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
                 >
                   Add Product
                 </Button>
@@ -429,14 +462,38 @@ const EditClient = () => {
               <Divider sx={{ mb: 3 }} />
 
               {clientData.products.length > 0 ? (
-                <TableContainer component={Paper} sx={{ mb: 3, boxShadow: 2, borderRadius: 2 }}>
+                <TableContainer 
+                  component={Paper} 
+                  sx={{ 
+                    mb: 3, 
+                    boxShadow: 2, 
+                    borderRadius: 2,
+                    overflowX: 'auto'
+                  }}
+                >
                   <Table>
                     <TableHead>
                       <TableRow sx={{ bgcolor: 'primary.light' }}>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Product</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Price</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Minimum Quantity</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                        <TableCell sx={{ 
+                          fontWeight: 'bold',
+                          whiteSpace: 'nowrap',
+                          fontSize: { xs: '0.8rem', sm: '1rem' }
+                        }}>Product</TableCell>
+                        <TableCell sx={{ 
+                          fontWeight: 'bold',
+                          whiteSpace: 'nowrap',
+                          fontSize: { xs: '0.8rem', sm: '1rem' }
+                        }}>Price</TableCell>
+                        <TableCell sx={{ 
+                          fontWeight: 'bold',
+                          whiteSpace: 'nowrap',
+                          fontSize: { xs: '0.8rem', sm: '1rem' }
+                        }}>Minimum Quantity</TableCell>
+                        <TableCell sx={{ 
+                          fontWeight: 'bold',
+                          whiteSpace: 'nowrap',
+                          fontSize: { xs: '0.8rem', sm: '1rem' }
+                        }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -489,7 +546,14 @@ const EditClient = () => {
               )}
             </Box>
 
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ 
+              mt: 4, 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: { xs: 2, sm: 0 },
+              '& > button': { width: { xs: '100%', sm: 'auto' } }
+            }}>
               <Button
                 variant="outlined"
                 onClick={() => navigate('/clients')}

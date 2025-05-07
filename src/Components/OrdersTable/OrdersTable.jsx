@@ -1,5 +1,5 @@
 // OrdersTable.jsx
-import React from "react";
+import React, { useContext } from "react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+
 const OrdersTable = ({
   orders,
   totalCount,
@@ -31,15 +32,7 @@ const OrdersTable = ({
   onViewInvoice,
   onDelete,
 }) => {
-  // const STATUS_COLORS = {
-  //   pending: "warning",
-  //   processing: "info",
-  //   shipped: "primary",
-  //   delivered: "success",
-  //   completed: "success",
-  //   cancelled: "error",
-  //   on_hold: "default",
-  // };
+
 
 
   const STATUS_COLORS = {

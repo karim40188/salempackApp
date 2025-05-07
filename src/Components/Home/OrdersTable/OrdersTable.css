@@ -20,8 +20,12 @@ OrdersTable.css
 
 .orders-table {
   width: 100%;
+  min-width: 700px; /* أو أكتر حسب عدد الأعمدة */
   border-collapse: collapse;
+  
 }
+
+
 
 .orders-table th, .orders-table td {
   text-align: left;
@@ -49,10 +53,11 @@ OrdersTable.css
   margin-top:10px;
 }
 
+
 @media (max-width: 786px) {
-  .orders-table {
-      width: 100% !important;
-      font-size: 12px;
+  .orders-table-container {
+    overflow-x: auto !important;
+    width:310px !important;
   }
 }
 

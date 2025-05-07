@@ -165,7 +165,7 @@ const ClientsPage = () => {
                 px: { xs: 3, sm: 2 },
                 boxShadow: "0 4px 10px rgba(25, 118, 210, 0.2)",
                 whiteSpace: "nowrap",
-                width:'300px'
+                width:'100%'
               }}
             >
               Add New Client
