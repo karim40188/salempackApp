@@ -29,6 +29,7 @@ import SendCodePage from '../Pages/Admins/SendCodePage.jsx';
 import ResetPasswordPage from '../Pages/Admins/ResetPasswordPage.jsx';
 import CheckCodePage from '../Pages/Admins/CheckCodePage.jsx';
 import ClientsSMSDashboard from '../Pages/ClientsSMSDashboard/ClientsSMSDashboard.jsx';
+import PrivacyPolicy from '../Pages/Policy/Policy.jsx';
 
 
 const AppRoutes = () => (
@@ -66,6 +67,14 @@ const AppRoutes = () => (
       element={
         <PrivateRoute>
           <DashboardLayout><Admins /></DashboardLayout>
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/policy"
+      element={
+        <PrivateRoute>
+          <DashboardLayout><PrivacyPolicy /></DashboardLayout>
         </PrivateRoute>
       }
     />
