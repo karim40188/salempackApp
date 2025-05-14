@@ -12,7 +12,6 @@ const Home = () => {
   const { baseUrl, token} = useContext(Context);
   const [months, setMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(""); // ✅ جديد
-
   const getMonths = async () => {
     try {
       const res = await axios.get(`${baseUrl}/dashboard/statistics/getmonth`, {
@@ -63,7 +62,7 @@ const Home = () => {
         </div>
 
         {/* 🟩 Right Panel */}
-        <NextTasksPanel />
+        <NextTasksPanel selectedMonth={selectedMonth}  />
       </div>
     </div>
   );

@@ -51,6 +51,7 @@ OrdersTable.css
 .orders-table .MuiChip-root {
   margin-left: 10px;
   margin-top:10px;
+  background-color: red !important;
 }
 
 

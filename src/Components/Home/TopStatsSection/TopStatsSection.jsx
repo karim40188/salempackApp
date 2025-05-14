@@ -37,7 +37,7 @@ const TopStats = ({ selectedMonth}) => {
 
       <div className="top-row">
         <div className="stat-card income">
-          <h2>{stats.currentOrdersIncome / 1000} EGP</h2>
+          <h2>{stats.currentOrdersIncome} EGP</h2>
           <p>Current Orders Income</p>
         </div>
         <div className="stat-card clients">

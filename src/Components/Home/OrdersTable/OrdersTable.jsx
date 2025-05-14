@@ -39,12 +39,12 @@ const OrdersTable = () => {
 
   return (
     <div className="orders-table-wrapper">
-      <TableContainer component={Paper} className="orders-table-container">
+      <TableContainer  component={Paper} className="orders-table-container">
         <div style={{ overflowX: 'auto' }}>
 
-          <Table>
+          <Table >
             <TableHead>
-              <TableRow>
+              <TableRow >
                 <TableCell>ID</TableCell>
                 <TableCell>Customer</TableCell>
                 <TableCell>Date</TableCell>
@@ -52,14 +52,14 @@ const OrdersTable = () => {
                 <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody >
               {lastFiveOrders?.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell align="center">#{order.id}</TableCell>
                   <TableCell>{order.client.CompanyName}</TableCell>
                   <TableCell>{new Date(order.createdAt).toLocaleDateString("en-GB")}</TableCell>
                   <TableCell>{order.items.length}</TableCell>
-                  <Chip label={order.status} color={STATUS_COLORS[order.status.toUpperCase()]} size="small" />
+                  <Chip sx={{mt:'10px'}} label={order.status} color={STATUS_COLORS[order.status.toUpperCase()]} size="small" />
                 </TableRow>
               ))}
             </TableBody>

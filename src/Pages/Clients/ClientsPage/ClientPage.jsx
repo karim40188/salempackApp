@@ -207,9 +207,9 @@ const ClientsPage = () => {
           </Button>
         </Paper>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container justifyContent={"center"}  spacing={3}>
           {filteredClients.map((client) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={client.id}>
+            <Grid sx={{width:'250px',height:"330px"}} item xs={12} sm={6} md={4} lg={3} key={client.id}>
               <Card 
                 sx={{ 
                   height: "100%", 

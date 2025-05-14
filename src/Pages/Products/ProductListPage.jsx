@@ -241,12 +241,12 @@ const ProductListPage = () => {
           </Stack>
         </Paper>
 
-        <Grid container spacing={3}>
+        <Grid container justifyContent={"center"} spacing={3}>
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => {
               const category = getCategoryById(product.categoryId);
               return (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+                <Grid sx={{width:'250px',height:"400px"}} item xs={12} sm={6} md={4} lg={3} key={product.id}>
                   <Card 
                     elevation={2} 
                     sx={{ 

@@ -112,7 +112,7 @@ const SelectClient = () => {
                 </InputAdornment>
               ),
             }}
-            sx={{ minWidth: 200 }}
+            sx={{ width: { xs: "100%", sm: 200 } }} // Responsive width
           />
           <Button
             variant="contained"
@@ -120,6 +120,7 @@ const SelectClient = () => {
             onClick={() => navigate("/add-clients")}
             startIcon={<Add />}
             className="add-client-btn"
+            sx={{ width: { xs: "100%", sm: "auto" } }} // Responsive button
           >
             Add Client
           </Button>
@@ -141,16 +142,16 @@ const SelectClient = () => {
           <Button
             variant="contained"
             color="success"
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, width: { xs: "100%", sm: "auto" } }}
             onClick={() => navigate("/add-clients")}
           >
             Add Client
           </Button>
         </Box>
       ) : (
-        <Grid container spacing={5}>
+        <Grid container spacing={5}> {/* Reduced spacing for smaller screens */}
           {filteredClients.map((client) => (
-            <Grid item xs={12} sm={6} md={4} lg={5} key={client.id}>
+            <Grid sx={{width:'200px',height:"330px"}} item xs={12} sm={6} md={4} lg={3} key={client.id}> {/* Adjusted breakpoints */}
               <Box className="client-box">
                 <Paper
                   elevation={selectedClient === client.id ? 8 : 2}
@@ -224,6 +225,7 @@ const SelectClient = () => {
           }}
           disabled={!selectedClient}
           className="select-product-btn"
+          sx={{ width: { xs: "100%", sm: "auto" } }} // Responsive button
         >
           Select Product
         </Button>

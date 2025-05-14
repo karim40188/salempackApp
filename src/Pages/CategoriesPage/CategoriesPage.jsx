@@ -92,7 +92,7 @@ const CategoriesPage = () => {
 
       <Grid container spacing={3} justifyContent="center">
         {categories.map((category) => (
-          <Grid item xs={12} sm={6} md={4} key={category.id}>
+          <Grid sx={{width:'250px',height:"330px"}} item xs={12} sm={6} md={4} key={category.id}>
             <Card
               sx={{
                 maxWidth: 345,

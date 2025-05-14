@@ -1,9 +1,9 @@
 .left-sidebar {
   display: grid;
   height: 70vh;
+  margin-bottom: 100px;
   grid-template-columns: repeat(2, 1fr);
-  row-gap: 0px;
-  ;
+
   column-gap: 10px;
   /* keep horizontal spacing */
   padding: 10px;
